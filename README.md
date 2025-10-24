@@ -100,7 +100,7 @@ Agent Workbench is an Electron-based desktop application that provides a compreh
 ### Setup
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/davidranich/agent-workbench
 cd agent-workbench
 
 # Install dependencies
