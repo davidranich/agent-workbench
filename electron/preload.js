@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   readDirectory: (dirPath) => ipcRenderer.invoke('read-directory', dirPath),
   readDirectoryTree: (dirPath) => ipcRenderer.invoke('read-directory-tree', dirPath),
   readFile: (filePath) => ipcRenderer.invoke('read-file', filePath),
+  readFileBinary: (filePath) => ipcRenderer.invoke('read-file-binary', filePath),
   writeFile: (filePath, content) => ipcRenderer.invoke('write-file', filePath, content),
   createFile: (filePath, content) => ipcRenderer.invoke('create-file', filePath, content),
   fileExists: (filePath) => ipcRenderer.invoke('file-exists', filePath),

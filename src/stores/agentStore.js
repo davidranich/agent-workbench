@@ -9,6 +9,7 @@ export const useAgentStore = defineStore('agent', () => {
   const fileContent = ref('');
   const originalFileContent = ref(''); // Track original content
   const hasUnsavedChanges = ref(false);
+  const selectedImage = ref(null); // For image viewer
 
   // Getters
   const markdownFiles = computed(() => {
@@ -75,6 +76,14 @@ export const useAgentStore = defineStore('agent', () => {
     hasUnsavedChanges.value = false;
   }
 
+  function selectImage(image) {
+    selectedImage.value = image;
+  }
+
+  function clearImageSelection() {
+    selectedImage.value = null;
+  }
+
   return {
     // State
     currentDirectory,
@@ -82,6 +91,7 @@ export const useAgentStore = defineStore('agent', () => {
     selectedFile,
     fileContent,
     hasUnsavedChanges,
+    selectedImage,
     // Getters
     markdownFiles,
     directories,
@@ -94,6 +104,8 @@ export const useAgentStore = defineStore('agent', () => {
     setFileContent,
     updateFileContent,
     clearSelection,
-    markAsSaved
+    markAsSaved,
+    selectImage,
+    clearImageSelection
   };
 });

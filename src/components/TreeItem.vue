@@ -36,6 +36,13 @@ function getFileIcon(item) {
   }
   if (item.name.endsWith('.md')) return 'file-lines';
   if (item.name.endsWith('.txt')) return 'file';
+
+  // Check for image files
+  const ext = item.name.toLowerCase().split('.').pop();
+  if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp'].includes(ext)) {
+    return 'image';
+  }
+
   return 'file';
 }
 

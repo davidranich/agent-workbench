@@ -7,6 +7,7 @@ import { useTerminalSettings } from '@/composables/useTerminalSettings';
 import FileBrowser from '@/components/FileBrowser.vue';
 import MarkdownEditor from '@/components/MarkdownEditor.vue';
 import SettingsModal from '@/components/SettingsModal.vue';
+import ImageViewer from '@/components/ImageViewer.vue';
 
 const agentStore = useAgentStore();
 const { selectDirectory, getAppPath, readDirectory } = useElectronAPI();
@@ -159,5 +160,13 @@ const handleLaunchClaudeCode = async () => {
 
     <!-- Settings Modal -->
     <SettingsModal v-if="showSettings" @close="showSettings = false" />
+
+    <!-- Image Viewer -->
+    <ImageViewer
+      v-if="agentStore.selectedImage"
+      :imagePath="agentStore.selectedImage.path"
+      :imageName="agentStore.selectedImage.name"
+      @close="agentStore.clearImageSelection()"
+    />
   </div>
 </template>

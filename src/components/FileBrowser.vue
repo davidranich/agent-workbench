@@ -71,28 +71,40 @@ function isExpanded(dirPath) {
   return expandedDirs.value.has(dirPath);
 }
 
+// Helper to check if file is an image
+function isImageFile(filename) {
+  const ext = filename.toLowerCase().split('.').pop();
+  return ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp'].includes(ext);
+}
+
 async function handleItemClick(item) {
   if (item.isDirectory) {
     toggleDirectory(item.path);
   } else if (item.isFile) {
-    const canSelect = agentStore.selectFile(item);
-    if (canSelect) {
-      try {
-        const content = await readFile(item.path);
-        agentStore.setFileContent(content);
-      } catch (err) {
-        error.value = 'Failed to load file';
-        console.error(err);
+    // Check if it's an image file
+    if (isImageFile(item.name)) {
+      agentStore.selectImage(item);
+    } else {
+      // Handle text files (md, txt)
+      const canSelect = agentStore.selectFile(item);
+      if (canSelect) {
+        try {
+          const content = await readFile(item.path);
+          agentStore.setFileContent(content);
+        } catch (err) {
+          error.value = 'Failed to load file';
+          console.error(err);
+        }
       }
     }
   }
 }
 
-// Check if file/folder should be shown (markdown/txt files or directories)
+// Check if file/folder should be shown (markdown/txt/image files or directories)
 function shouldShowItem(item) {
   if (item.isDirectory) return true;
   if (item.isFile) {
-    return item.name.endsWith('.md') || item.name.endsWith('.txt');
+    return item.name.endsWith('.md') || item.name.endsWith('.txt') || isImageFile(item.name);
   }
   return false;
 }
@@ -101,6 +113,7 @@ function getFileIcon(file) {
   if (file.isDirectory) return 'folder';
   if (file.name.endsWith('.md')) return 'file-lines';
   if (file.name.endsWith('.txt')) return 'file';
+  if (isImageFile(file.name)) return 'image';
   return 'file';
 }
 

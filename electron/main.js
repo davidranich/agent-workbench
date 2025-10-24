@@ -176,6 +176,18 @@ ipcMain.handle('read-file', async (event, filePath) => {
   }
 });
 
+// Read file as binary (for images)
+ipcMain.handle('read-file-binary', async (event, filePath) => {
+  try {
+    const buffer = await fs.readFile(filePath);
+    // Convert buffer to array so it can be sent via IPC
+    return Array.from(buffer);
+  } catch (error) {
+    console.error('Error reading binary file:', error);
+    throw error;
+  }
+});
+
 // Write file contents
 ipcMain.handle('write-file', async (event, filePath, content) => {
   try {

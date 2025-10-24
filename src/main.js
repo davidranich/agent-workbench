@@ -39,7 +39,10 @@ import {
   faChevronUp,
   faPen,
   faSearch,
-  faRotate
+  faRotate,
+  faImage,
+  faExpand,
+  faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons';
 
 // Add icons to library
@@ -75,7 +78,10 @@ library.add(
   faChevronUp,
   faPen,
   faSearch,
-  faRotate
+  faRotate,
+  faImage,
+  faExpand,
+  faExclamationTriangle
 );
 
 const app = createApp(App);
