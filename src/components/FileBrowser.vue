@@ -165,11 +165,38 @@ async function handleItemClick(item) {
   }
 }
 
-// Check if file/folder should be shown (markdown/txt/image files or directories)
+// Check if a file is an accepted type
+function isAcceptedFile(item) {
+  if (!item.isFile) return false;
+  return item.name.endsWith('.md') || item.name.endsWith('.txt') || isImageFile(item.name);
+}
+
+// Recursively check if a directory contains any accepted files
+function containsAcceptedFiles(directory) {
+  if (!directory.isDirectory || !directory.children) return false;
+
+  for (const child of directory.children) {
+    // If child is an accepted file, directory contains accepted files
+    if (isAcceptedFile(child)) {
+      return true;
+    }
+    // If child is a directory, check recursively
+    if (child.isDirectory && containsAcceptedFiles(child)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// Check if file/folder should be shown (markdown/txt/image files or directories with accepted files)
 function shouldShowItem(item) {
-  if (item.isDirectory) return true;
   if (item.isFile) {
-    return item.name.endsWith('.md') || item.name.endsWith('.txt') || isImageFile(item.name);
+    return isAcceptedFile(item);
+  }
+  if (item.isDirectory) {
+    // Only show directories that contain accepted files (recursively)
+    return containsAcceptedFiles(item);
   }
   return false;
 }
