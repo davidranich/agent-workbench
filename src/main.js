@@ -42,7 +42,9 @@ import {
   faRotate,
   faImage,
   faExpand,
-  faExclamationTriangle
+  faExclamationTriangle,
+  faPalette,
+  faCopy
 } from '@fortawesome/free-solid-svg-icons';
 
 // Add icons to library
@@ -81,7 +83,9 @@ library.add(
   faRotate,
   faImage,
   faExpand,
-  faExclamationTriangle
+  faExclamationTriangle,
+  faPalette,
+  faCopy
 );
 
 const app = createApp(App);

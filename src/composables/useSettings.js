@@ -4,6 +4,20 @@ const STORAGE_KEYS = {
   FONT_SIZE: 'agentWorkbench_fontSize',
   COLOR_SCHEME_LIGHT: 'agentWorkbench_colorSchemeLight',
   COLOR_SCHEME_DARK: 'agentWorkbench_colorSchemeDark',
+  CUSTOM_THEME_NAMES: 'agentWorkbench_customThemeNames',
+  CUSTOM_THEME_MODES: 'agentWorkbench_customThemeModes',
+  CUSTOM_01_LIGHT: 'agentWorkbench_custom01Light',
+  CUSTOM_01_DARK: 'agentWorkbench_custom01Dark',
+  CUSTOM_02_LIGHT: 'agentWorkbench_custom02Light',
+  CUSTOM_02_DARK: 'agentWorkbench_custom02Dark',
+  CUSTOM_03_LIGHT: 'agentWorkbench_custom03Light',
+  CUSTOM_03_DARK: 'agentWorkbench_custom03Dark',
+  CUSTOM_04_LIGHT: 'agentWorkbench_custom04Light',
+  CUSTOM_04_DARK: 'agentWorkbench_custom04Dark',
+  CUSTOM_05_LIGHT: 'agentWorkbench_custom05Light',
+  CUSTOM_05_DARK: 'agentWorkbench_custom05Dark',
+  CUSTOM_06_LIGHT: 'agentWorkbench_custom06Light',
+  CUSTOM_06_DARK: 'agentWorkbench_custom06Dark',
   TERMINAL_WINDOW_MODE: 'agentWorkbench_terminalWindowMode',
   TERMINAL_SPLIT_DIRECTION: 'agentWorkbench_terminalSplitDirection',
   TERMINAL_SHOW_SPLIT: 'agentWorkbench_terminalShowSplit',
@@ -41,6 +55,12 @@ export const COLOR_SCHEMES = {
   CYBERPUNK: 'cyberpunk',
   EVA: 'eva',
   GRUVBOX: 'gruvbox',
+  CUSTOM_01: 'custom_01',
+  CUSTOM_02: 'custom_02',
+  CUSTOM_03: 'custom_03',
+  CUSTOM_04: 'custom_04',
+  CUSTOM_05: 'custom_05',
+  CUSTOM_06: 'custom_06',
 };
 
 // Terminal settings
@@ -236,10 +256,77 @@ export const COLOR_PALETTES = {
   },
 };
 
+// Default custom colors (based on Default Gray theme)
+const defaultCustomColorsLight = {
+  bg: '#f9fafb',
+  bgSecondary: '#f3f4f6',
+  border: '#e5e7eb',
+  text: '#111827',
+  textSecondary: '#6b7280',
+  accent: '#3b82f6',
+  btnPrimary: '#2563eb',
+  btnPrimaryHover: '#1d4ed8',
+  btnSecondary: '#7c3aed',
+  btnSecondaryHover: '#6d28d9',
+};
+
+const defaultCustomColorsDark = {
+  bg: '#111827',
+  bgSecondary: '#1f2937',
+  border: '#374151',
+  text: '#f9fafb',
+  textSecondary: '#9ca3af',
+  accent: '#3b82f6',
+  btnPrimary: '#2563eb',
+  btnPrimaryHover: '#1d4ed8',
+  btnSecondary: '#7c3aed',
+  btnSecondaryHover: '#6d28d9',
+};
+
 // Initialize settings from localStorage
 const fontSize = ref(localStorage.getItem(STORAGE_KEYS.FONT_SIZE) || FONT_SIZES.MEDIUM);
 const colorSchemeLight = ref(localStorage.getItem(STORAGE_KEYS.COLOR_SCHEME_LIGHT) || COLOR_SCHEMES.DEFAULT);
 const colorSchemeDark = ref(localStorage.getItem(STORAGE_KEYS.COLOR_SCHEME_DARK) || COLOR_SCHEMES.DEFAULT);
+
+// Custom theme names (for the 6 slots)
+const customThemeNames = ref(
+  JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_THEME_NAMES) || 'null') || {
+    custom_01: '',
+    custom_02: '',
+    custom_03: '',
+    custom_04: '',
+    custom_05: '',
+    custom_06: '',
+  }
+);
+
+// Custom theme colors for each slot (light and dark)
+const customThemeColors = ref({
+  custom_01: {
+    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_01_LIGHT) || 'null') || { ...defaultCustomColorsLight },
+    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_01_DARK) || 'null') || { ...defaultCustomColorsDark },
+  },
+  custom_02: {
+    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_02_LIGHT) || 'null') || { ...defaultCustomColorsLight },
+    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_02_DARK) || 'null') || { ...defaultCustomColorsDark },
+  },
+  custom_03: {
+    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_03_LIGHT) || 'null') || { ...defaultCustomColorsLight },
+    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_03_DARK) || 'null') || { ...defaultCustomColorsDark },
+  },
+  custom_04: {
+    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_04_LIGHT) || 'null') || { ...defaultCustomColorsLight },
+    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_04_DARK) || 'null') || { ...defaultCustomColorsDark },
+  },
+  custom_05: {
+    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_05_LIGHT) || 'null') || { ...defaultCustomColorsLight },
+    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_05_DARK) || 'null') || { ...defaultCustomColorsDark },
+  },
+  custom_06: {
+    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_06_LIGHT) || 'null') || { ...defaultCustomColorsLight },
+    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_06_DARK) || 'null') || { ...defaultCustomColorsDark },
+  },
+});
 
 // Terminal settings
 const terminalWindowMode = ref(localStorage.getItem(STORAGE_KEYS.TERMINAL_WINDOW_MODE) || TERMINAL_WINDOW_MODES.WINDOW);
@@ -263,6 +350,48 @@ watch(colorSchemeDark, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.COLOR_SCHEME_DARK, newValue);
   applyColorScheme();
 });
+
+// Watch custom theme names
+watch(customThemeNames, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.CUSTOM_THEME_NAMES, JSON.stringify(newValue));
+}, { deep: true });
+
+// Watch custom theme colors
+watch(() => customThemeColors.value.custom_01, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.CUSTOM_01_LIGHT, JSON.stringify(newValue.light));
+  localStorage.setItem(STORAGE_KEYS.CUSTOM_01_DARK, JSON.stringify(newValue.dark));
+  applyColorScheme();
+}, { deep: true });
+
+watch(() => customThemeColors.value.custom_02, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.CUSTOM_02_LIGHT, JSON.stringify(newValue.light));
+  localStorage.setItem(STORAGE_KEYS.CUSTOM_02_DARK, JSON.stringify(newValue.dark));
+  applyColorScheme();
+}, { deep: true });
+
+watch(() => customThemeColors.value.custom_03, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.CUSTOM_03_LIGHT, JSON.stringify(newValue.light));
+  localStorage.setItem(STORAGE_KEYS.CUSTOM_03_DARK, JSON.stringify(newValue.dark));
+  applyColorScheme();
+}, { deep: true });
+
+watch(() => customThemeColors.value.custom_04, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.CUSTOM_04_LIGHT, JSON.stringify(newValue.light));
+  localStorage.setItem(STORAGE_KEYS.CUSTOM_04_DARK, JSON.stringify(newValue.dark));
+  applyColorScheme();
+}, { deep: true });
+
+watch(() => customThemeColors.value.custom_05, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.CUSTOM_05_LIGHT, JSON.stringify(newValue.light));
+  localStorage.setItem(STORAGE_KEYS.CUSTOM_05_DARK, JSON.stringify(newValue.dark));
+  applyColorScheme();
+}, { deep: true });
+
+watch(() => customThemeColors.value.custom_06, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.CUSTOM_06_LIGHT, JSON.stringify(newValue.light));
+  localStorage.setItem(STORAGE_KEYS.CUSTOM_06_DARK, JSON.stringify(newValue.dark));
+  applyColorScheme();
+}, { deep: true });
 
 watch(terminalWindowMode, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.TERMINAL_WINDOW_MODE, newValue);
@@ -294,7 +423,19 @@ function applyColorScheme() {
   const isDark = document.documentElement.classList.contains('dark');
   const scheme = isDark ? colorSchemeDark.value : colorSchemeLight.value;
   const mode = isDark ? 'dark' : 'light';
-  const palette = COLOR_PALETTES[mode][scheme];
+
+  let palette;
+
+  // Check if this is a custom theme slot
+  if (scheme.startsWith('custom_')) {
+    palette = customThemeColors.value[scheme][mode];
+  } else if (COLOR_PALETTES[mode][scheme]) {
+    // Use preset theme colors
+    palette = COLOR_PALETTES[mode][scheme];
+  } else {
+    // Fallback to default
+    palette = COLOR_PALETTES[mode][COLOR_SCHEMES.DEFAULT];
+  }
 
   // Apply CSS custom properties
   const root = document.documentElement;
@@ -329,6 +470,84 @@ function hexToRgb(hex) {
 // Listen for theme changes
 if (typeof window !== 'undefined') {
   window.addEventListener('theme-changed', applyColorScheme);
+}
+
+// Get current theme colors (based on selected scheme)
+function getCurrentThemeColors() {
+  const isDark = document.documentElement.classList.contains('dark');
+  const scheme = isDark ? colorSchemeDark.value : colorSchemeLight.value;
+  const mode = isDark ? 'dark' : 'light';
+
+  let colors = {};
+
+  if (scheme.startsWith('custom_')) {
+    colors = { ...customThemeColors.value[scheme][mode] };
+  } else if (COLOR_PALETTES[mode][scheme]) {
+    colors = { ...COLOR_PALETTES[mode][scheme] };
+  } else {
+    colors = { ...COLOR_PALETTES[mode][COLOR_SCHEMES.DEFAULT] };
+  }
+
+  return colors;
+}
+
+// Get current theme name
+function getCurrentThemeName() {
+  const isDark = document.documentElement.classList.contains('dark');
+  const scheme = isDark ? colorSchemeDark.value : colorSchemeLight.value;
+
+  if (scheme.startsWith('custom_')) {
+    return customThemeNames.value[scheme] || '';
+  } else {
+    const labels = isDark ? COLOR_SCHEME_LABELS : COLOR_SCHEME_LABELS_LIGHT;
+    return labels[scheme] || '';
+  }
+}
+
+// Save theme to a specific slot
+function saveThemeToSlot(slotKey, themeName, lightColors, darkColors) {
+  if (!themeName || themeName.trim() === '') {
+    throw new Error('Theme name cannot be empty');
+  }
+
+  if (!slotKey || !slotKey.startsWith('custom_')) {
+    throw new Error('Invalid slot key');
+  }
+
+  customThemeNames.value[slotKey] = themeName.trim();
+  customThemeColors.value[slotKey].light = { ...lightColors };
+  customThemeColors.value[slotKey].dark = { ...darkColors };
+}
+
+// Clear a custom theme slot
+function clearThemeSlot(slotKey) {
+  if (!slotKey || !slotKey.startsWith('custom_')) {
+    throw new Error('Invalid slot key');
+  }
+
+  customThemeNames.value[slotKey] = '';
+  customThemeColors.value[slotKey].light = { ...defaultCustomColorsLight };
+  customThemeColors.value[slotKey].dark = { ...defaultCustomColorsDark };
+
+  // If currently using this slot, switch to default
+  if (colorSchemeLight.value === slotKey) {
+    colorSchemeLight.value = COLOR_SCHEMES.DEFAULT;
+  }
+  if (colorSchemeDark.value === slotKey) {
+    colorSchemeDark.value = COLOR_SCHEMES.DEFAULT;
+  }
+}
+
+// Get list of custom themes with their metadata
+function getCustomThemes() {
+  return Object.keys(customThemeNames.value)
+    .filter(key => customThemeNames.value[key] !== '')
+    .map(key => ({
+      slotKey: key,
+      name: customThemeNames.value[key],
+      lightColors: customThemeColors.value[key].light,
+      darkColors: customThemeColors.value[key].dark,
+    }));
 }
 
 export function useSettings() {
@@ -378,6 +597,18 @@ export function useSettings() {
     terminalWindowHeight.value = validHeight;
   };
 
+  const setCustomThemeColor = (slotKey, mode, colorKey, value) => {
+    if (!slotKey || !slotKey.startsWith('custom_')) {
+      return;
+    }
+
+    if (mode === 'light') {
+      customThemeColors.value[slotKey].light[colorKey] = value;
+    } else {
+      customThemeColors.value[slotKey].dark[colorKey] = value;
+    }
+  };
+
   const initializeSettings = () => {
     applyFontSize(fontSize.value);
     applyColorScheme();
@@ -402,6 +633,17 @@ export function useSettings() {
     COLOR_SCHEMES,
     COLOR_SCHEME_LABELS,
     COLOR_SCHEME_LABELS_LIGHT,
+    COLOR_PALETTES,
+
+    // Custom themes
+    customThemeNames,
+    customThemeColors,
+    getCurrentThemeColors,
+    getCurrentThemeName,
+    setCustomThemeColor,
+    saveThemeToSlot,
+    clearThemeSlot,
+    getCustomThemes,
 
     // Terminal settings
     terminalWindowMode,

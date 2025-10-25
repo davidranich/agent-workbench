@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useSettings } from '@/composables/useSettings';
 import { useTheme } from '@/composables/useTheme';
 
@@ -17,6 +17,15 @@ const {
   COLOR_SCHEMES,
   COLOR_SCHEME_LABELS,
   COLOR_SCHEME_LABELS_LIGHT,
+  COLOR_PALETTES,
+  customThemeNames,
+  customThemeColors,
+  getCurrentThemeColors,
+  getCurrentThemeName,
+  setCustomThemeColor,
+  saveThemeToSlot,
+  clearThemeSlot,
+  getCustomThemes,
   terminalWindowMode,
   terminalSplitDirection,
   terminalShowSplit,
@@ -39,12 +48,299 @@ const activeTab = ref('appearance');
 
 const tabs = [
   { id: 'appearance', label: 'Appearance', icon: 'sun' },
+  { id: 'custom-theme', label: 'Customize Theme', icon: 'palette' },
   { id: 'accessibility', label: 'Accessibility', icon: 'book-open' },
   { id: 'terminal', label: 'Terminal', icon: 'terminal' },
 ];
 
+const colorLabels = {
+  bg: 'Main Background (Editor & Preview)',
+  bgSecondary: 'Sidebar Background',
+  border: 'Borders & Dividers',
+  text: 'Primary Text (Headings & Content)',
+  textSecondary: 'Secondary Text (Labels & Descriptions)',
+  accent: 'Accent Color (Links & Highlights)',
+  btnPrimary: 'Primary Button Background',
+  btnPrimaryHover: 'Primary Button Hover',
+  btnSecondary: 'Secondary Button Background',
+  btnSecondaryHover: 'Secondary Button Hover',
+};
+
+const themeName = ref(getCurrentThemeName()); // Initialize with current theme name
+const saveMessage = ref('');
+const saveError = ref('');
+const currentColors = ref(getCurrentThemeColors());
+
+// Delete confirmation modal
+const showDeleteConfirm = ref(false);
+const deleteConfirmTitle = ref('');
+const deleteConfirmMessage = ref('');
+const deleteConfirmAction = ref(null);
+
+// Get current scheme info
+const getCurrentScheme = () => {
+  const isDark = currentTheme.value === 'dark';
+  return isDark ? colorSchemeDark.value : colorSchemeLight.value;
+};
+
+const isCustomTheme = () => {
+  return getCurrentScheme().startsWith('custom_');
+};
+
+const isDefaultTheme = () => {
+  return !getCurrentScheme().startsWith('custom_');
+};
+
+// Update colors and name when theme changes
+watch([currentTheme, colorSchemeLight, colorSchemeDark], () => {
+  currentColors.value = getCurrentThemeColors();
+  themeName.value = getCurrentThemeName();
+});
+
+// Load collapsed state from localStorage, default to false (collapsed)
+const showDefaultThemes = ref(localStorage.getItem('agentWorkbench_showDefaultThemes') === 'true');
+const showCustomThemes = ref(localStorage.getItem('agentWorkbench_showCustomThemes') === 'true');
+
+// Save state to localStorage when changed
+watch(showDefaultThemes, (newValue) => {
+  localStorage.setItem('agentWorkbench_showDefaultThemes', String(newValue));
+});
+
+watch(showCustomThemes, (newValue) => {
+  localStorage.setItem('agentWorkbench_showCustomThemes', String(newValue));
+});
+
 const handleClose = () => {
   emit('close');
+};
+
+const handleSaveTheme = () => {
+  saveError.value = '';
+  saveMessage.value = '';
+
+  if (!isCustomTheme()) {
+    saveError.value = 'Cannot save changes to default themes';
+    return;
+  }
+
+  if (!themeName.value || themeName.value.trim() === '') {
+    saveError.value = 'Please enter a theme name';
+    return;
+  }
+
+  try {
+    const scheme = getCurrentScheme();
+    const isDark = currentTheme.value === 'dark';
+
+    // Get existing colors for both modes
+    const lightColors = { ...customThemeColors.value[scheme].light };
+    const darkColors = { ...customThemeColors.value[scheme].dark };
+
+    // Update the colors for the current mode
+    if (isDark) {
+      Object.assign(darkColors, currentColors.value);
+    } else {
+      Object.assign(lightColors, currentColors.value);
+    }
+
+    // Save to the current slot
+    saveThemeToSlot(scheme, themeName.value, lightColors, darkColors);
+
+    saveMessage.value = `Theme "${themeName.value}" saved successfully!`;
+
+    // Clear message after 3 seconds
+    setTimeout(() => {
+      saveMessage.value = '';
+    }, 3000);
+  } catch (error) {
+    saveError.value = error.message || 'Failed to save theme';
+  }
+};
+
+const handleDeleteTheme = () => {
+  if (!isCustomTheme()) {
+    return;
+  }
+
+  const scheme = getCurrentScheme();
+  const name = customThemeNames.value[scheme];
+
+  deleteConfirmTitle.value = 'Delete Theme';
+  deleteConfirmMessage.value = name
+    ? `Are you sure you want to delete "${name}"? This action cannot be undone.`
+    : `Are you sure you want to delete this theme? This action cannot be undone.`;
+  deleteConfirmAction.value = () => {
+    try {
+      clearThemeSlot(scheme);
+      saveMessage.value = `Theme deleted successfully!`;
+
+      // Clear message after 3 seconds
+      setTimeout(() => {
+        saveMessage.value = '';
+      }, 3000);
+    } catch (error) {
+      saveError.value = error.message || 'Failed to delete theme';
+    }
+  };
+  showDeleteConfirm.value = true;
+};
+
+const handleClearSlot = (slotKey) => {
+  const slotNumber = slotKey.split('_')[1];
+  const name = customThemeNames.value[slotKey];
+
+  deleteConfirmTitle.value = 'Delete Theme';
+  deleteConfirmMessage.value = name
+    ? `Are you sure you want to delete "${name}"? This action cannot be undone.`
+    : `Are you sure you want to clear Slot ${slotNumber}? This action cannot be undone.`;
+  deleteConfirmAction.value = () => {
+    try {
+      clearThemeSlot(slotKey);
+      saveMessage.value = `Theme deleted successfully!`;
+
+      // Clear message after 3 seconds
+      setTimeout(() => {
+        saveMessage.value = '';
+      }, 3000);
+    } catch (error) {
+      saveError.value = error.message || 'Failed to clear slot';
+    }
+  };
+  showDeleteConfirm.value = true;
+};
+
+const confirmDelete = () => {
+  if (deleteConfirmAction.value) {
+    deleteConfirmAction.value();
+  }
+  showDeleteConfirm.value = false;
+  deleteConfirmAction.value = null;
+};
+
+const cancelDelete = () => {
+  showDeleteConfirm.value = false;
+  deleteConfirmAction.value = null;
+};
+
+const handleColorChange = (colorKey, value) => {
+  currentColors.value[colorKey] = value;
+
+  // Update the custom theme colors immediately
+  const isDark = currentTheme.value === 'dark';
+  const scheme = isDark ? colorSchemeDark.value : colorSchemeLight.value;
+
+  if (scheme.startsWith('custom_')) {
+    setCustomThemeColor(scheme, isDark ? 'dark' : 'light', colorKey, value);
+  }
+};
+
+const handleCreateNewTheme = () => {
+  // Find the first available slot
+  const availableSlot = ['custom_01', 'custom_02', 'custom_03', 'custom_04', 'custom_05', 'custom_06']
+    .find(key => !customThemeNames.value[key]);
+
+  if (!availableSlot) {
+    saveError.value = 'All theme slots are full. Delete a theme to create a new one.';
+    setTimeout(() => {
+      saveError.value = '';
+    }, 3000);
+    return;
+  }
+
+  try {
+    // Create a new theme with default colors and a generic name
+    const slotNumber = availableSlot.split('_')[1];
+    const newThemeName = `Custom Theme ${slotNumber}`;
+
+    // Get default colors based on current theme colors
+    const lightColors = { ...getCurrentThemeColors() };
+    const darkColors = { ...getCurrentThemeColors() };
+
+    saveThemeToSlot(availableSlot, newThemeName, lightColors, darkColors);
+
+    // Switch to the new theme
+    const isDark = currentTheme.value === 'dark';
+    if (isDark) {
+      setColorSchemeDark(availableSlot);
+    } else {
+      setColorSchemeLight(availableSlot);
+    }
+
+    saveMessage.value = `New theme "${newThemeName}" created!`;
+
+    // Switch to Customize Theme tab
+    activeTab.value = 'custom-theme';
+
+    // Clear message after 3 seconds
+    setTimeout(() => {
+      saveMessage.value = '';
+    }, 3000);
+  } catch (error) {
+    saveError.value = error.message || 'Failed to create theme';
+  }
+};
+
+const handleCloneTheme = () => {
+  // Find the first available slot
+  const availableSlot = ['custom_01', 'custom_02', 'custom_03', 'custom_04', 'custom_05', 'custom_06']
+    .find(key => !customThemeNames.value[key]);
+
+  if (!availableSlot) {
+    saveError.value = 'All theme slots are full (maximum 6). Delete a theme to clone a new one.';
+    setTimeout(() => {
+      saveError.value = '';
+    }, 3000);
+    return;
+  }
+
+  try {
+    const currentScheme = getCurrentScheme();
+    const slotNumber = availableSlot.split('_')[1];
+
+    // Get the name of the theme we're cloning
+    const sourceThemeName = getCurrentThemeName();
+    const newThemeName = `${sourceThemeName} (Copy)`;
+
+    // Get colors from the current theme for both light and dark modes
+    let lightColors, darkColors;
+
+    if (currentScheme.startsWith('custom_')) {
+      // Cloning a custom theme - get both modes
+      lightColors = { ...customThemeColors.value[currentScheme].light };
+      darkColors = { ...customThemeColors.value[currentScheme].dark };
+    } else {
+      // Cloning a default theme - get colors for both modes from presets
+      lightColors = COLOR_PALETTES.light[currentScheme]
+        ? { ...COLOR_PALETTES.light[currentScheme] }
+        : { ...COLOR_PALETTES.light[COLOR_SCHEMES.DEFAULT] };
+
+      darkColors = COLOR_PALETTES.dark[currentScheme]
+        ? { ...COLOR_PALETTES.dark[currentScheme] }
+        : { ...COLOR_PALETTES.dark[COLOR_SCHEMES.DEFAULT] };
+    }
+
+    saveThemeToSlot(availableSlot, newThemeName, lightColors, darkColors);
+
+    // Switch to the new cloned theme
+    const isDark = currentTheme.value === 'dark';
+    if (isDark) {
+      setColorSchemeDark(availableSlot);
+    } else {
+      setColorSchemeLight(availableSlot);
+    }
+
+    saveMessage.value = `Theme "${newThemeName}" created successfully!`;
+
+    // Switch to Customize Theme tab
+    activeTab.value = 'custom-theme';
+
+    // Clear message after 3 seconds
+    setTimeout(() => {
+      saveMessage.value = '';
+    }, 3000);
+  } catch (error) {
+    saveError.value = error.message || 'Failed to clone theme';
+  }
 };
 </script>
 
@@ -73,7 +369,7 @@ const handleClose = () => {
         <!-- Content -->
         <div class="flex flex-1 overflow-hidden">
           <!-- Sidebar Tabs -->
-          <div class="w-48 border-r border-gray-200 dark:border-gray-700 p-2">
+          <div class="w-56 border-r border-gray-200 dark:border-gray-700 p-2">
             <button
               v-for="tab in tabs"
               :key="tab.id"
@@ -122,40 +418,255 @@ const handleClose = () => {
                   </div>
                 </div>
 
-                <!-- Color Scheme Light -->
-                <div class="space-y-3 mt-6">
-                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Light Mode Color</label>
-                  <div class="grid grid-cols-2 gap-3">
-                    <button
-                      v-for="(label, key) in COLOR_SCHEME_LABELS_LIGHT"
-                      :key="key"
-                      @click="setColorSchemeLight(key)"
-                      class="px-4 py-3 rounded-lg border-2 transition-all text-sm"
-                      :class="colorSchemeLight === key
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
-                    >
-                      {{ label }}
-                    </button>
+                <!-- Clone Current Theme -->
+                <div class="space-y-3">
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Quick Actions</label>
+                  <button
+                    @click="handleCloneTheme"
+                    :disabled="Object.values(customThemeNames).filter(name => name).length >= 6"
+                    class="w-full px-4 py-3 rounded-lg border-2 text-sm font-medium flex items-center justify-center gap-2 transition-all disabled:cursor-not-allowed disabled:opacity-60"
+                    :class="Object.values(customThemeNames).filter(name => name).length >= 6
+                      ? 'border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-gray-800'
+                      : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900 hover:text-blue-700 dark:hover:text-blue-300'"
+                    title="Create a copy of the current theme"
+                  >
+                    <font-awesome-icon icon="copy" />
+                    Clone Current Theme
+                  </button>
+                  <p class="text-xs text-gray-500 dark:text-gray-500">
+                    <span v-if="Object.values(customThemeNames).filter(name => name).length >= 6">
+                      You have reached the maximum number of custom themes (6). You must delete one first.
+                    </span>
+                    <span v-else>
+                      Creates a copy of "{{ getCurrentThemeName() }}" that you can customize.
+                    </span>
+                  </p>
+                </div>
+
+                <!-- Default Themes Section (Collapsible) -->
+                <div class="mt-6 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                  <button
+                    @click="showDefaultThemes = !showDefaultThemes"
+                    class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors flex items-center justify-between"
+                  >
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <span v-if="currentTheme === 'light'">Default Light Themes</span>
+                      <span v-else>Default Dark Themes</span>
+                      ({{ Object.keys(COLOR_SCHEME_LABELS).length }})
+                    </span>
+                    <font-awesome-icon
+                      :icon="showDefaultThemes ? 'chevron-up' : 'chevron-down'"
+                      class="text-gray-600 dark:text-gray-400 text-sm"
+                    />
+                  </button>
+                  <div v-show="showDefaultThemes" class="p-4 space-y-6">
+                    <!-- Color Scheme Light (only shown in light mode) -->
+                    <div v-if="currentTheme === 'light'" class="space-y-3">
+                      <div class="grid grid-cols-2 gap-3">
+                        <button
+                          v-for="(label, key) in COLOR_SCHEME_LABELS_LIGHT"
+                          :key="key"
+                          @click="setColorSchemeLight(key)"
+                          class="px-4 py-3 rounded-lg border-2 transition-all text-sm"
+                          :class="colorSchemeLight === key
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                        >
+                          {{ label }}
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Color Scheme Dark (only shown in dark mode) -->
+                    <div v-if="currentTheme === 'dark'" class="space-y-3">
+                      <div class="grid grid-cols-2 gap-3">
+                        <button
+                          v-for="(label, key) in COLOR_SCHEME_LABELS"
+                          :key="key"
+                          @click="setColorSchemeDark(key)"
+                          class="px-4 py-3 rounded-lg border-2 transition-all text-sm"
+                          :class="colorSchemeDark === key
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                        >
+                          {{ label }}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <!-- Color Scheme Dark -->
-                <div class="space-y-3 mt-6">
-                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Dark Mode Color</label>
-                  <div class="grid grid-cols-2 gap-3">
-                    <button
-                      v-for="(label, key) in COLOR_SCHEME_LABELS"
-                      :key="key"
-                      @click="setColorSchemeDark(key)"
-                      class="px-4 py-3 rounded-lg border-2 transition-all text-sm"
-                      :class="colorSchemeDark === key
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
-                    >
-                      {{ label }}
-                    </button>
+                <!-- Custom Themes Section (Collapsible) -->
+                <div class="mt-6 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                  <button
+                    @click="showCustomThemes = !showCustomThemes"
+                    class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors flex items-center justify-between"
+                  >
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <span v-if="currentTheme === 'light'">Custom Light Themes</span>
+                      <span v-else>Custom Dark Themes</span>
+                      ({{ Object.values(customThemeNames).filter(name => name).length }})
+                    </span>
+                    <font-awesome-icon
+                      :icon="showCustomThemes ? 'chevron-up' : 'chevron-down'"
+                      class="text-gray-600 dark:text-gray-400 text-sm"
+                    />
+                  </button>
+                  <div v-show="showCustomThemes" class="p-4 space-y-6">
+                    <!-- Custom Themes for Light Mode (only shown in light mode) -->
+                    <div v-if="currentTheme === 'light'" class="space-y-3">
+                      <div class="grid grid-cols-2 gap-3">
+                        <button
+                          v-for="slotKey in ['custom_01', 'custom_02', 'custom_03', 'custom_04', 'custom_05', 'custom_06']"
+                          :key="`light-${slotKey}`"
+                          v-show="customThemeNames[slotKey]"
+                          @click="setColorSchemeLight(slotKey)"
+                          class="px-4 py-3 rounded-lg border-2 transition-all text-sm relative group"
+                          :class="colorSchemeLight === slotKey
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                        >
+                          {{ customThemeNames[slotKey] }}
+                          <button
+                            @click.stop="handleClearSlot(slotKey)"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded transition-all"
+                            title="Delete theme"
+                          >
+                            <font-awesome-icon icon="trash" class="text-red-600 dark:text-red-400 text-xs" />
+                          </button>
+                        </button>
+                      </div>
+
+                      <!-- Create New Theme Button -->
+                      <button
+                        @click="handleCreateNewTheme"
+                        class="w-full px-4 py-3 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:text-blue-700 dark:hover:text-blue-300 transition-all text-sm font-medium flex items-center justify-center gap-2"
+                      >
+                        <font-awesome-icon icon="plus" />
+                        Create New Theme
+                      </button>
+
+                      <p
+                        v-if="!Object.values(customThemeNames).some(name => name)"
+                        class="text-xs text-gray-500 dark:text-gray-500"
+                      >
+                        Click "Create New Theme" to get started.
+                      </p>
+                    </div>
+
+                    <!-- Custom Themes for Dark Mode (only shown in dark mode) -->
+                    <div v-if="currentTheme === 'dark'" class="space-y-3">
+                      <div class="grid grid-cols-2 gap-3">
+                        <button
+                          v-for="slotKey in ['custom_01', 'custom_02', 'custom_03', 'custom_04', 'custom_05', 'custom_06']"
+                          :key="`dark-${slotKey}`"
+                          v-show="customThemeNames[slotKey]"
+                          @click="setColorSchemeDark(slotKey)"
+                          class="px-4 py-3 rounded-lg border-2 transition-all text-sm relative group"
+                          :class="colorSchemeDark === slotKey
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                        >
+                          {{ customThemeNames[slotKey] }}
+                          <button
+                            @click.stop="handleClearSlot(slotKey)"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded transition-all"
+                            title="Delete theme"
+                          >
+                            <font-awesome-icon icon="trash" class="text-red-600 dark:text-red-400 text-xs" />
+                          </button>
+                        </button>
+                      </div>
+
+                      <!-- Create New Theme Button -->
+                      <button
+                        @click="handleCreateNewTheme"
+                        class="w-full px-4 py-3 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:text-blue-700 dark:hover:text-blue-300 transition-all text-sm font-medium flex items-center justify-center gap-2"
+                      >
+                        <font-awesome-icon icon="plus" />
+                        Create New Theme
+                      </button>
+
+                      <p
+                        v-if="!Object.values(customThemeNames).some(name => name)"
+                        class="text-xs text-gray-500 dark:text-gray-500"
+                      >
+                        Click "Create New Theme" to get started.
+                      </p>
+                    </div>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Custom Theme Tab -->
+            <div v-if="activeTab === 'custom-theme'" class="space-y-6">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Customize Theme</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Editing: {{ getCurrentThemeName() || 'Current Theme' }} ({{ currentTheme === 'light' ? 'Light Mode' : 'Dark Mode' }})
+                </p>
+
+                <!-- Theme Name Input -->
+                <div class="space-y-2 mb-6">
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Theme Name</label>
+                  <input
+                    type="text"
+                    v-model="themeName"
+                    :disabled="isDefaultTheme()"
+                    placeholder="Enter theme name..."
+                    class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+                  />
+                </div>
+
+                <!-- Color Pickers -->
+                <div class="space-y-4 mb-6">
+                  <div
+                    v-for="(label, key) in colorLabels"
+                    :key="key"
+                    class="flex items-center gap-4"
+                  >
+                    <label class="text-sm text-gray-700 dark:text-gray-300 w-48">{{ label }}</label>
+                    <input
+                      type="color"
+                      :value="currentColors[key]"
+                      @input="handleColorChange(key, $event.target.value)"
+                      class="w-16 h-8 border border-gray-300 dark:border-gray-600 rounded cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      :value="currentColors[key]"
+                      @input="handleColorChange(key, $event.target.value)"
+                      placeholder="#000000"
+                      class="flex-1 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                    />
+                  </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3 mb-4">
+                  <button
+                    @click="handleDeleteTheme"
+                    :disabled="isDefaultTheme()"
+                    class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm font-medium disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-500 disabled:cursor-not-allowed disabled:opacity-60 disabled:border-2 disabled:border-gray-400 dark:disabled:border-gray-600"
+                  >
+                    Delete Theme
+                  </button>
+                  <button
+                    @click="handleSaveTheme"
+                    :disabled="isDefaultTheme()"
+                    class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-500 disabled:cursor-not-allowed disabled:opacity-60 disabled:border-2 disabled:border-gray-400 dark:disabled:border-gray-600"
+                  >
+                    Save Theme
+                  </button>
+                </div>
+
+                <!-- Success/Error Messages -->
+                <div v-if="saveMessage" class="p-3 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg">
+                  <p class="text-sm text-green-800 dark:text-green-300">{{ saveMessage }}</p>
+                </div>
+                <div v-if="saveError" class="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p class="text-sm text-red-800 dark:text-red-300">{{ saveError }}</p>
                 </div>
               </div>
             </div>
@@ -342,6 +853,57 @@ const handleClose = () => {
             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium"
           >
             Done
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div
+      v-if="showDeleteConfirm"
+      class="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-75"
+      @click.self="cancelDelete"
+    >
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-[500px] flex flex-col">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ deleteConfirmTitle }}</h3>
+          <button
+            @click="cancelDelete"
+            class="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+            title="Close"
+          >
+            <font-awesome-icon icon="times" class="text-gray-600 dark:text-gray-400" />
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div class="px-6 py-4">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+              <font-awesome-icon icon="exclamation-triangle" class="text-red-600 dark:text-red-400" />
+            </div>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700 dark:text-gray-300">
+                {{ deleteConfirmMessage }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+          <button
+            @click="cancelDelete"
+            class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 rounded-lg transition-colors text-sm font-medium"
+          >
+            Cancel
+          </button>
+          <button
+            @click="confirmDelete"
+            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm font-medium"
+          >
+            Delete
           </button>
         </div>
       </div>

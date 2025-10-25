@@ -855,7 +855,8 @@ const openReplace = () => {
           <!-- Empty State -->
           <div
             v-else
-            class="flex items-center justify-center h-full text-gray-500 dark:text-gray-500"
+            class="flex items-center justify-center h-full"
+            style="color: var(--color-text-secondary)"
           >
             <div class="text-center">
               <div class="mb-3">
@@ -907,7 +908,8 @@ const openReplace = () => {
           <!-- Empty State -->
           <div
             v-else
-            class="flex items-center justify-center h-full text-gray-500 dark:text-gray-600"
+            class="flex items-center justify-center h-full"
+            style="color: var(--color-text-secondary)"
           >
             <div class="text-center">
               <div class="mb-3">
