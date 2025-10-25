@@ -10,6 +10,9 @@ let mainWindow;
 // Terminal sessions storage
 const terminals = {};
 
+// File system watcher
+let directoryWatcher = null;
+
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
 function createWindow() {
@@ -289,6 +292,53 @@ ipcMain.handle('rename-item', async (event, oldPath, newPath) => {
     return { success: true, newPath: newPath };
   } catch (error) {
     console.error('Error renaming item:', error);
+    throw error;
+  }
+});
+
+// ============================================
+// File System Watching
+// ============================================
+
+// Start watching a directory for changes
+ipcMain.handle('watch-directory', (event, dirPath) => {
+  try {
+    // Close existing watcher if any
+    if (directoryWatcher) {
+      directoryWatcher.close();
+      directoryWatcher = null;
+    }
+
+    // Use fs.watch for native file system watching
+    const fsSync = require('fs');
+    directoryWatcher = fsSync.watch(dirPath, { recursive: true }, (eventType, filename) => {
+      // Notify renderer process of changes
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('directory-changed', {
+          eventType,
+          filename,
+          dirPath
+        });
+      }
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error watching directory:', error);
+    throw error;
+  }
+});
+
+// Stop watching the directory
+ipcMain.handle('unwatch-directory', () => {
+  try {
+    if (directoryWatcher) {
+      directoryWatcher.close();
+      directoryWatcher = null;
+    }
+    return { success: true };
+  } catch (error) {
+    console.error('Error unwatching directory:', error);
     throw error;
   }
 });

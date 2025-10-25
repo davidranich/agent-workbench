@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed, provide } from 'vue';
+import { ref, watch, computed, provide, onUnmounted } from 'vue';
 import { useAgentStore } from '@/stores/agentStore';
 import { useElectronAPI } from '@/composables/useElectronAPI';
 import NewFileDialog from './NewFileDialog.vue';
@@ -20,12 +20,71 @@ const fileTree = ref([]);
 const expandedDirs = ref(new Set());
 const isRootDropTarget = ref(false);
 
+// File watching
+let reloadDebounceTimer = null;
+let directoryChangedHandler = null;
+
 // Watch for directory changes and load files
-watch(() => agentStore.currentDirectory, async (newDir) => {
+watch(() => agentStore.currentDirectory, async (newDir, oldDir) => {
   if (newDir) {
+    // Unwatch old directory if it exists
+    if (oldDir && window.electronAPI) {
+      try {
+        await window.electronAPI.unwatchDirectory();
+        if (directoryChangedHandler) {
+          window.electronAPI.removeDirectoryChangedListener(directoryChangedHandler);
+          directoryChangedHandler = null;
+        }
+      } catch (err) {
+        console.error('Error unwatching directory:', err);
+      }
+    }
+
     await loadDirectoryContents(newDir);
+
+    // Start watching new directory
+    if (window.electronAPI) {
+      try {
+        await window.electronAPI.watchDirectory(newDir);
+
+        // Set up listener for directory changes
+        directoryChangedHandler = (data) => {
+          // Debounce the reload to prevent excessive updates
+          if (reloadDebounceTimer) {
+            clearTimeout(reloadDebounceTimer);
+          }
+
+          reloadDebounceTimer = setTimeout(async () => {
+            console.log('Directory changed, reloading...', data);
+            await loadDirectoryContents(agentStore.currentDirectory);
+          }, 300); // Wait 300ms after last change before reloading
+        };
+
+        window.electronAPI.onDirectoryChanged(directoryChangedHandler);
+      } catch (err) {
+        console.error('Error watching directory:', err);
+      }
+    }
   }
 }, { immediate: true });
+
+// Clean up watcher on component unmount
+onUnmounted(async () => {
+  if (window.electronAPI) {
+    try {
+      await window.electronAPI.unwatchDirectory();
+      if (directoryChangedHandler) {
+        window.electronAPI.removeDirectoryChangedListener(directoryChangedHandler);
+      }
+    } catch (err) {
+      console.error('Error cleaning up directory watcher:', err);
+    }
+  }
+
+  if (reloadDebounceTimer) {
+    clearTimeout(reloadDebounceTimer);
+  }
+});
 
 async function loadDirectoryContents(dirPath) {
   loading.value = true;

@@ -30,6 +30,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Claude Code integration
   launchClaudeCodeExternal: (filePath, cwd, terminalType) => ipcRenderer.invoke('launch-claude-code-external', filePath, cwd, terminalType),
 
+  // File watching
+  watchDirectory: (dirPath) => ipcRenderer.invoke('watch-directory', dirPath),
+  unwatchDirectory: () => ipcRenderer.invoke('unwatch-directory'),
+  onDirectoryChanged: (callback) => ipcRenderer.on('directory-changed', (event, data) => callback(data)),
+  removeDirectoryChangedListener: (callback) => ipcRenderer.removeListener('directory-changed', callback),
+
   // Platform information
   platform: process.platform
 });
