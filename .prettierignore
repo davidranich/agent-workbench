@@ -1,0 +1,19 @@
+# Build outputs
+dist
+dist-electron
+release
+build
+
+# Dependencies
+node_modules
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+
+# Package manager
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

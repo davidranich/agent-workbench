@@ -8,10 +8,22 @@
     "build": "vite build && electron-builder",
     "preview": "vite preview",
     "electron:dev": "vite",
-    "electron:build": "vite build && electron-builder"
+    "electron:build": "vite build && electron-builder",
+    "lint": "eslint . --ext .js,.vue",
+    "lint:fix": "eslint . --ext .js,.vue --fix",
+    "format": "prettier --write \"**/*.{js,vue,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,vue,json,md}\""
   },
   "author": "David Ranich",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davidranich/agent-workbench.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davidranich/agent-workbench/issues"
+  },
+  "homepage": "https://github.com/davidranich/agent-workbench",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-regular-svg-icons": "^6.5.1",
@@ -31,7 +43,11 @@
     "electron": "^28.2.0",
     "electron-builder": "^24.9.1",
     "electron-rebuild": "^3.2.9",
+    "eslint": "^9.38.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "^10.5.1",
     "postcss": "^8.4.33",
+    "prettier": "^3.6.2",
     "tailwindcss": "^3.4.1",
     "vite": "^5.0.12",
     "vite-plugin-electron": "^0.28.2",
