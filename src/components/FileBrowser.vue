@@ -5,6 +5,7 @@ import { useElectronAPI } from '@/composables/useElectronAPI';
 import NewFileDialog from './NewFileDialog.vue';
 import NewFolderDialog from './NewFolderDialog.vue';
 import RenameDialog from './RenameDialog.vue';
+import ConfirmDialog from './ConfirmDialog.vue';
 import TreeItem from './TreeItem.vue';
 
 const agentStore = useAgentStore();
@@ -15,6 +16,11 @@ const error = ref(null);
 const showNewFileDialog = ref(false);
 const showNewFolderDialog = ref(false);
 const showRenameDialog = ref(false);
+const showDeleteConfirm = ref(false);
+const deleteConfirmTitle = ref('');
+const deleteConfirmMessage = ref('');
+const deleteConfirmAction = ref(null);
+const deleteConfirmType = ref('danger');
 const itemToRename = ref(null);
 const fileTree = ref([]);
 const expandedDirs = ref(new Set());
@@ -226,29 +232,30 @@ async function handleDeleteFile(file, event) {
   // Stop event propagation to prevent file selection
   event.stopPropagation();
 
-  // Confirmation dialog
-  const confirmed = confirm(`Are you sure you want to delete "${file.name}"?\n\nThis action cannot be undone.`);
-  if (!confirmed) {
-    return;
-  }
+  // Show confirmation dialog
+  deleteConfirmTitle.value = 'Delete File';
+  deleteConfirmMessage.value = `Are you sure you want to delete "${file.name}"?\n\nThis action cannot be undone.`;
+  deleteConfirmType.value = 'danger';
+  deleteConfirmAction.value = async () => {
+    try {
+      // Delete the file
+      await deleteFile(file.path);
 
-  try {
-    // Delete the file
-    await deleteFile(file.path);
+      // If the deleted file was selected, clear selection
+      if (isSelected(file)) {
+        agentStore.clearSelection();
+      }
 
-    // If the deleted file was selected, clear selection
-    if (isSelected(file)) {
-      agentStore.clearSelection();
+      // Reload directory contents
+      await loadDirectoryContents(agentStore.currentDirectory);
+
+      error.value = null;
+    } catch (err) {
+      error.value = 'Failed to delete file';
+      console.error(err);
     }
-
-    // Reload directory contents
-    await loadDirectoryContents(agentStore.currentDirectory);
-
-    error.value = null;
-  } catch (err) {
-    error.value = 'Failed to delete file';
-    console.error(err);
-  }
+  };
+  showDeleteConfirm.value = true;
 }
 
 async function handleCreateFolder(folderName) {
@@ -285,31 +292,30 @@ async function handleDeleteFolder(folder, event) {
   // Stop event propagation to prevent folder toggle
   event.stopPropagation();
 
-  // Confirmation dialog with stronger warning
-  const confirmed = confirm(
-    `Are you sure you want to delete the folder "${folder.name}" and ALL its contents?\n\nThis will permanently delete all files and subfolders inside "${folder.name}".\n\nThis action cannot be undone.`
-  );
-  if (!confirmed) {
-    return;
-  }
+  // Show confirmation dialog with stronger warning
+  deleteConfirmTitle.value = 'Delete Folder';
+  deleteConfirmMessage.value = `Are you sure you want to delete the folder "${folder.name}" and ALL its contents?\n\nThis will permanently delete all files and subfolders inside "${folder.name}".\n\nThis action cannot be undone.`;
+  deleteConfirmType.value = 'danger';
+  deleteConfirmAction.value = async () => {
+    try {
+      // Delete the folder recursively
+      await deleteDirectory(folder.path);
 
-  try {
-    // Delete the folder recursively
-    await deleteDirectory(folder.path);
+      // If a file in the deleted folder was selected, clear selection
+      if (agentStore.selectedFile && agentStore.selectedFile.path.startsWith(folder.path)) {
+        agentStore.clearSelection();
+      }
 
-    // If a file in the deleted folder was selected, clear selection
-    if (agentStore.selectedFile && agentStore.selectedFile.path.startsWith(folder.path)) {
-      agentStore.clearSelection();
+      // Reload directory contents
+      await loadDirectoryContents(agentStore.currentDirectory);
+
+      error.value = null;
+    } catch (err) {
+      error.value = 'Failed to delete folder';
+      console.error(err);
     }
-
-    // Reload directory contents
-    await loadDirectoryContents(agentStore.currentDirectory);
-
-    error.value = null;
-  } catch (err) {
-    error.value = 'Failed to delete folder';
-    console.error(err);
-  }
+  };
+  showDeleteConfirm.value = true;
 }
 
 // Unified delete handler that dispatches to file or folder delete
@@ -328,6 +334,15 @@ function handleRenameItem(item, event) {
 
   itemToRename.value = item;
   showRenameDialog.value = true;
+}
+
+// Handle delete confirmation
+async function handleDeleteConfirm() {
+  if (deleteConfirmAction.value) {
+    await deleteConfirmAction.value();
+  }
+  showDeleteConfirm.value = false;
+  deleteConfirmAction.value = null;
 }
 
 // Handle rename confirmation from dialog
@@ -544,6 +559,17 @@ async function handleRootDrop(event) {
       :isDirectory="itemToRename?.isDirectory"
       @close="showRenameDialog = false; itemToRename = null"
       @rename="handleRenameConfirm"
+    />
+
+    <!-- Delete Confirmation Dialog -->
+    <ConfirmDialog
+      :show="showDeleteConfirm"
+      :title="deleteConfirmTitle"
+      :message="deleteConfirmMessage"
+      :type="deleteConfirmType"
+      confirmText="Delete"
+      @close="showDeleteConfirm = false; deleteConfirmAction = null"
+      @confirm="handleDeleteConfirm"
     />
   </div>
 </template>
