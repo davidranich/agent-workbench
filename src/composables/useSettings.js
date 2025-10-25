@@ -42,7 +42,7 @@ export const FONT_SIZE_LABELS = {
 
 export const FONT_SIZE_VALUES = {
   [FONT_SIZES.SMALL]: '0.875rem', // 14px
-  [FONT_SIZES.MEDIUM]: '1rem',    // 16px
+  [FONT_SIZES.MEDIUM]: '1rem', // 16px
   [FONT_SIZES.LARGE]: '1.125rem', // 18px
   [FONT_SIZES.EXTRA_LARGE]: '1.25rem', // 20px
 };
@@ -285,8 +285,12 @@ const defaultCustomColorsDark = {
 
 // Initialize settings from localStorage
 const fontSize = ref(localStorage.getItem(STORAGE_KEYS.FONT_SIZE) || FONT_SIZES.MEDIUM);
-const colorSchemeLight = ref(localStorage.getItem(STORAGE_KEYS.COLOR_SCHEME_LIGHT) || COLOR_SCHEMES.DEFAULT);
-const colorSchemeDark = ref(localStorage.getItem(STORAGE_KEYS.COLOR_SCHEME_DARK) || COLOR_SCHEMES.DEFAULT);
+const colorSchemeLight = ref(
+  localStorage.getItem(STORAGE_KEYS.COLOR_SCHEME_LIGHT) || COLOR_SCHEMES.DEFAULT
+);
+const colorSchemeDark = ref(
+  localStorage.getItem(STORAGE_KEYS.COLOR_SCHEME_DARK) || COLOR_SCHEMES.DEFAULT
+);
 
 // Custom theme names (for the 6 slots)
 const customThemeNames = ref(
@@ -303,37 +307,69 @@ const customThemeNames = ref(
 // Custom theme colors for each slot (light and dark)
 const customThemeColors = ref({
   custom_01: {
-    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_01_LIGHT) || 'null') || { ...defaultCustomColorsLight },
-    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_01_DARK) || 'null') || { ...defaultCustomColorsDark },
+    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_01_LIGHT) || 'null') || {
+      ...defaultCustomColorsLight,
+    },
+    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_01_DARK) || 'null') || {
+      ...defaultCustomColorsDark,
+    },
   },
   custom_02: {
-    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_02_LIGHT) || 'null') || { ...defaultCustomColorsLight },
-    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_02_DARK) || 'null') || { ...defaultCustomColorsDark },
+    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_02_LIGHT) || 'null') || {
+      ...defaultCustomColorsLight,
+    },
+    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_02_DARK) || 'null') || {
+      ...defaultCustomColorsDark,
+    },
   },
   custom_03: {
-    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_03_LIGHT) || 'null') || { ...defaultCustomColorsLight },
-    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_03_DARK) || 'null') || { ...defaultCustomColorsDark },
+    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_03_LIGHT) || 'null') || {
+      ...defaultCustomColorsLight,
+    },
+    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_03_DARK) || 'null') || {
+      ...defaultCustomColorsDark,
+    },
   },
   custom_04: {
-    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_04_LIGHT) || 'null') || { ...defaultCustomColorsLight },
-    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_04_DARK) || 'null') || { ...defaultCustomColorsDark },
+    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_04_LIGHT) || 'null') || {
+      ...defaultCustomColorsLight,
+    },
+    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_04_DARK) || 'null') || {
+      ...defaultCustomColorsDark,
+    },
   },
   custom_05: {
-    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_05_LIGHT) || 'null') || { ...defaultCustomColorsLight },
-    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_05_DARK) || 'null') || { ...defaultCustomColorsDark },
+    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_05_LIGHT) || 'null') || {
+      ...defaultCustomColorsLight,
+    },
+    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_05_DARK) || 'null') || {
+      ...defaultCustomColorsDark,
+    },
   },
   custom_06: {
-    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_06_LIGHT) || 'null') || { ...defaultCustomColorsLight },
-    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_06_DARK) || 'null') || { ...defaultCustomColorsDark },
+    light: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_06_LIGHT) || 'null') || {
+      ...defaultCustomColorsLight,
+    },
+    dark: JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_06_DARK) || 'null') || {
+      ...defaultCustomColorsDark,
+    },
   },
 });
 
 // Terminal settings
-const terminalWindowMode = ref(localStorage.getItem(STORAGE_KEYS.TERMINAL_WINDOW_MODE) || TERMINAL_WINDOW_MODES.WINDOW);
-const terminalSplitDirection = ref(localStorage.getItem(STORAGE_KEYS.TERMINAL_SPLIT_DIRECTION) || TERMINAL_SPLIT_DIRECTIONS.VERTICAL);
+const terminalWindowMode = ref(
+  localStorage.getItem(STORAGE_KEYS.TERMINAL_WINDOW_MODE) || TERMINAL_WINDOW_MODES.WINDOW
+);
+const terminalSplitDirection = ref(
+  localStorage.getItem(STORAGE_KEYS.TERMINAL_SPLIT_DIRECTION) || TERMINAL_SPLIT_DIRECTIONS.VERTICAL
+);
 const terminalShowSplit = ref(localStorage.getItem(STORAGE_KEYS.TERMINAL_SHOW_SPLIT) !== 'false'); // Default true
-const terminalWindowWidth = ref(parseInt(localStorage.getItem(STORAGE_KEYS.TERMINAL_WINDOW_WIDTH)) || 1700);
-const terminalWindowHeight = ref(parseInt(localStorage.getItem(STORAGE_KEYS.TERMINAL_WINDOW_HEIGHT)) || 450);
+const terminalWindowWidth = ref(
+  parseInt(localStorage.getItem(STORAGE_KEYS.TERMINAL_WINDOW_WIDTH)) || 1700
+);
+const terminalWindowHeight = ref(
+  parseInt(localStorage.getItem(STORAGE_KEYS.TERMINAL_WINDOW_HEIGHT)) || 450
+);
 
 // Watch for changes and save to localStorage
 watch(fontSize, (newValue) => {
@@ -352,46 +388,74 @@ watch(colorSchemeDark, (newValue) => {
 });
 
 // Watch custom theme names
-watch(customThemeNames, (newValue) => {
-  localStorage.setItem(STORAGE_KEYS.CUSTOM_THEME_NAMES, JSON.stringify(newValue));
-}, { deep: true });
+watch(
+  customThemeNames,
+  (newValue) => {
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_THEME_NAMES, JSON.stringify(newValue));
+  },
+  { deep: true }
+);
 
 // Watch custom theme colors
-watch(() => customThemeColors.value.custom_01, (newValue) => {
-  localStorage.setItem(STORAGE_KEYS.CUSTOM_01_LIGHT, JSON.stringify(newValue.light));
-  localStorage.setItem(STORAGE_KEYS.CUSTOM_01_DARK, JSON.stringify(newValue.dark));
-  applyColorScheme();
-}, { deep: true });
+watch(
+  () => customThemeColors.value.custom_01,
+  (newValue) => {
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_01_LIGHT, JSON.stringify(newValue.light));
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_01_DARK, JSON.stringify(newValue.dark));
+    applyColorScheme();
+  },
+  { deep: true }
+);
 
-watch(() => customThemeColors.value.custom_02, (newValue) => {
-  localStorage.setItem(STORAGE_KEYS.CUSTOM_02_LIGHT, JSON.stringify(newValue.light));
-  localStorage.setItem(STORAGE_KEYS.CUSTOM_02_DARK, JSON.stringify(newValue.dark));
-  applyColorScheme();
-}, { deep: true });
+watch(
+  () => customThemeColors.value.custom_02,
+  (newValue) => {
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_02_LIGHT, JSON.stringify(newValue.light));
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_02_DARK, JSON.stringify(newValue.dark));
+    applyColorScheme();
+  },
+  { deep: true }
+);
 
-watch(() => customThemeColors.value.custom_03, (newValue) => {
-  localStorage.setItem(STORAGE_KEYS.CUSTOM_03_LIGHT, JSON.stringify(newValue.light));
-  localStorage.setItem(STORAGE_KEYS.CUSTOM_03_DARK, JSON.stringify(newValue.dark));
-  applyColorScheme();
-}, { deep: true });
+watch(
+  () => customThemeColors.value.custom_03,
+  (newValue) => {
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_03_LIGHT, JSON.stringify(newValue.light));
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_03_DARK, JSON.stringify(newValue.dark));
+    applyColorScheme();
+  },
+  { deep: true }
+);
 
-watch(() => customThemeColors.value.custom_04, (newValue) => {
-  localStorage.setItem(STORAGE_KEYS.CUSTOM_04_LIGHT, JSON.stringify(newValue.light));
-  localStorage.setItem(STORAGE_KEYS.CUSTOM_04_DARK, JSON.stringify(newValue.dark));
-  applyColorScheme();
-}, { deep: true });
+watch(
+  () => customThemeColors.value.custom_04,
+  (newValue) => {
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_04_LIGHT, JSON.stringify(newValue.light));
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_04_DARK, JSON.stringify(newValue.dark));
+    applyColorScheme();
+  },
+  { deep: true }
+);
 
-watch(() => customThemeColors.value.custom_05, (newValue) => {
-  localStorage.setItem(STORAGE_KEYS.CUSTOM_05_LIGHT, JSON.stringify(newValue.light));
-  localStorage.setItem(STORAGE_KEYS.CUSTOM_05_DARK, JSON.stringify(newValue.dark));
-  applyColorScheme();
-}, { deep: true });
+watch(
+  () => customThemeColors.value.custom_05,
+  (newValue) => {
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_05_LIGHT, JSON.stringify(newValue.light));
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_05_DARK, JSON.stringify(newValue.dark));
+    applyColorScheme();
+  },
+  { deep: true }
+);
 
-watch(() => customThemeColors.value.custom_06, (newValue) => {
-  localStorage.setItem(STORAGE_KEYS.CUSTOM_06_LIGHT, JSON.stringify(newValue.light));
-  localStorage.setItem(STORAGE_KEYS.CUSTOM_06_DARK, JSON.stringify(newValue.dark));
-  applyColorScheme();
-}, { deep: true });
+watch(
+  () => customThemeColors.value.custom_06,
+  (newValue) => {
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_06_LIGHT, JSON.stringify(newValue.light));
+    localStorage.setItem(STORAGE_KEYS.CUSTOM_06_DARK, JSON.stringify(newValue.dark));
+    applyColorScheme();
+  },
+  { deep: true }
+);
 
 watch(terminalWindowMode, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.TERMINAL_WINDOW_MODE, newValue);
@@ -453,18 +517,23 @@ function applyColorScheme() {
   // Create a semi-transparent version of btnSecondary for focus ring
   const secondaryRgb = hexToRgb(palette.btnSecondary);
   if (secondaryRgb) {
-    root.style.setProperty('--color-btn-secondary-shadow', `${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}`);
+    root.style.setProperty(
+      '--color-btn-secondary-shadow',
+      `${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}`
+    );
   }
 }
 
 // Helper function to convert hex to RGB
 function hexToRgb(hex) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
-  } : null;
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : null;
 }
 
 // Listen for theme changes
@@ -541,8 +610,8 @@ function clearThemeSlot(slotKey) {
 // Get list of custom themes with their metadata
 function getCustomThemes() {
   return Object.keys(customThemeNames.value)
-    .filter(key => customThemeNames.value[key] !== '')
-    .map(key => ({
+    .filter((key) => customThemeNames.value[key] !== '')
+    .map((key) => ({
       slotKey: key,
       name: customThemeNames.value[key],
       lightColors: customThemeColors.value[key].light,

@@ -9,7 +9,17 @@ import ConfirmDialog from './ConfirmDialog.vue';
 import TreeItem from './TreeItem.vue';
 
 const agentStore = useAgentStore();
-const { readDirectoryTree, readFile, createFile, fileExists, deleteFile, createDirectory, directoryExists, deleteDirectory, renameItem } = useElectronAPI();
+const {
+  readDirectoryTree,
+  readFile,
+  createFile,
+  fileExists,
+  deleteFile,
+  createDirectory,
+  directoryExists,
+  deleteDirectory,
+  renameItem,
+} = useElectronAPI();
 
 const loading = ref(false);
 const error = ref(null);
@@ -31,48 +41,52 @@ let reloadDebounceTimer = null;
 let directoryChangedHandler = null;
 
 // Watch for directory changes and load files
-watch(() => agentStore.currentDirectory, async (newDir, oldDir) => {
-  if (newDir) {
-    // Unwatch old directory if it exists
-    if (oldDir && window.electronAPI) {
-      try {
-        await window.electronAPI.unwatchDirectory();
-        if (directoryChangedHandler) {
-          window.electronAPI.removeDirectoryChangedListener(directoryChangedHandler);
-          directoryChangedHandler = null;
-        }
-      } catch (err) {
-        console.error('Error unwatching directory:', err);
-      }
-    }
-
-    await loadDirectoryContents(newDir);
-
-    // Start watching new directory
-    if (window.electronAPI) {
-      try {
-        await window.electronAPI.watchDirectory(newDir);
-
-        // Set up listener for directory changes
-        directoryChangedHandler = (data) => {
-          // Debounce the reload to prevent excessive updates
-          if (reloadDebounceTimer) {
-            clearTimeout(reloadDebounceTimer);
+watch(
+  () => agentStore.currentDirectory,
+  async (newDir, oldDir) => {
+    if (newDir) {
+      // Unwatch old directory if it exists
+      if (oldDir && window.electronAPI) {
+        try {
+          await window.electronAPI.unwatchDirectory();
+          if (directoryChangedHandler) {
+            window.electronAPI.removeDirectoryChangedListener(directoryChangedHandler);
+            directoryChangedHandler = null;
           }
+        } catch (err) {
+          console.error('Error unwatching directory:', err);
+        }
+      }
 
-          reloadDebounceTimer = setTimeout(async () => {
-            console.log('Directory changed, reloading...', data);
-            await loadDirectoryContents(agentStore.currentDirectory);
-          }, 300); // Wait 300ms after last change before reloading
-        };
+      await loadDirectoryContents(newDir);
 
-        window.electronAPI.onDirectoryChanged(directoryChangedHandler);
-      } catch (err) {
-        console.error('Error watching directory:', err);
+      // Start watching new directory
+      if (window.electronAPI) {
+        try {
+          await window.electronAPI.watchDirectory(newDir);
+
+          // Set up listener for directory changes
+          directoryChangedHandler = (data) => {
+            // Debounce the reload to prevent excessive updates
+            if (reloadDebounceTimer) {
+              clearTimeout(reloadDebounceTimer);
+            }
+
+            reloadDebounceTimer = setTimeout(async () => {
+              console.log('Directory changed, reloading...', data);
+              await loadDirectoryContents(agentStore.currentDirectory);
+            }, 300); // Wait 300ms after last change before reloading
+          };
+
+          window.electronAPI.onDirectoryChanged(directoryChangedHandler);
+        } catch (err) {
+          console.error('Error watching directory:', err);
+        }
       }
     }
-  }
-}, { immediate: true });
+  },
+  { immediate: true }
+);
 
 // Clean up watcher on component unmount
 onUnmounted(async () => {
@@ -167,13 +181,17 @@ async function handleItemClick(item) {
 
 // Check if a file is an accepted type
 function isAcceptedFile(item) {
-  if (!item.isFile) return false;
+  if (!item.isFile) {
+    return false;
+  }
   return item.name.endsWith('.md') || item.name.endsWith('.txt') || isImageFile(item.name);
 }
 
 // Recursively check if a directory contains any accepted files
 function containsAcceptedFiles(directory) {
-  if (!directory.isDirectory || !directory.children) return false;
+  if (!directory.isDirectory || !directory.children) {
+    return false;
+  }
 
   for (const child of directory.children) {
     // If child is an accepted file, directory contains accepted files
@@ -202,10 +220,18 @@ function shouldShowItem(item) {
 }
 
 function getFileIcon(file) {
-  if (file.isDirectory) return 'folder';
-  if (file.name.endsWith('.md')) return 'file-lines';
-  if (file.name.endsWith('.txt')) return 'file';
-  if (isImageFile(file.name)) return 'image';
+  if (file.isDirectory) {
+    return 'folder';
+  }
+  if (file.name.endsWith('.md')) {
+    return 'file-lines';
+  }
+  if (file.name.endsWith('.txt')) {
+    return 'file';
+  }
+  if (isImageFile(file.name)) {
+    return 'image';
+  }
   return 'file';
 }
 
@@ -243,7 +269,7 @@ async function handleCreateFile(fileName) {
     await loadDirectoryContents(agentStore.currentDirectory);
 
     // Select the newly created file
-    const newFile = agentStore.files.find(f => f.path === filePath);
+    const newFile = agentStore.files.find((f) => f.path === filePath);
     if (newFile) {
       await handleItemClick(newFile);
     }
@@ -374,7 +400,9 @@ async function handleDeleteConfirm() {
 
 // Handle rename confirmation from dialog
 async function handleRenameConfirm(newName) {
-  if (!itemToRename.value) return;
+  if (!itemToRename.value) {
+    return;
+  }
 
   const item = itemToRename.value;
   const parentPath = item.path.substring(0, item.path.lastIndexOf('/'));
@@ -493,24 +521,27 @@ async function handleRootDrop(event) {
         <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-300">Agent Files</h3>
         <div v-if="agentStore.currentDirectory" class="flex gap-2">
           <button
-            @click="showNewFolderDialog = true"
             class="px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors flex items-center gap-1"
             title="Create new folder"
+            @click="showNewFolderDialog = true"
           >
             <font-awesome-icon icon="folder" />
             Folder
           </button>
           <button
-            @click="showNewFileDialog = true"
             class="px-2 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded transition-colors flex items-center gap-1"
             title="Create new agent file"
+            @click="showNewFileDialog = true"
           >
             <font-awesome-icon icon="plus" />
             File
           </button>
         </div>
       </div>
-      <div v-if="agentStore.currentDirectory" class="text-xs text-gray-600 dark:text-gray-500 break-all">
+      <div
+        v-if="agentStore.currentDirectory"
+        class="text-xs text-gray-600 dark:text-gray-500 break-all"
+      >
         {{ agentStore.currentDirectory }}
       </div>
     </div>
@@ -534,7 +565,10 @@ async function handleRootDrop(event) {
       </div>
 
       <!-- Empty state -->
-      <div v-else-if="agentStore.markdownFiles.length === 0" class="p-4 text-center text-gray-600 dark:text-gray-500 text-sm">
+      <div
+        v-else-if="agentStore.markdownFiles.length === 0"
+        class="p-4 text-center text-gray-600 dark:text-gray-500 text-sm"
+      >
         <div class="mb-2">
           <font-awesome-icon icon="folder" size="2x" />
         </div>
@@ -562,7 +596,9 @@ async function handleRootDrop(event) {
       v-if="agentStore.markdownFiles.length > 0"
       class="p-3 border-t border-gray-300 dark:border-gray-700 text-xs text-gray-600 dark:text-gray-500"
     >
-      {{ agentStore.markdownFiles.length }} agent file{{ agentStore.markdownFiles.length !== 1 ? 's' : '' }}
+      {{ agentStore.markdownFiles.length }} agent file{{
+        agentStore.markdownFiles.length !== 1 ? 's' : ''
+      }}
     </div>
 
     <!-- New File Dialog -->
@@ -582,9 +618,12 @@ async function handleRootDrop(event) {
     <!-- Rename Dialog -->
     <RenameDialog
       :show="showRenameDialog"
-      :currentName="itemToRename?.name"
-      :isDirectory="itemToRename?.isDirectory"
-      @close="showRenameDialog = false; itemToRename = null"
+      :current-name="itemToRename?.name"
+      :is-directory="itemToRename?.isDirectory"
+      @close="
+        showRenameDialog = false;
+        itemToRename = null;
+      "
       @rename="handleRenameConfirm"
     />
 
@@ -594,8 +633,11 @@ async function handleRootDrop(event) {
       :title="deleteConfirmTitle"
       :message="deleteConfirmMessage"
       :type="deleteConfirmType"
-      confirmText="Delete"
-      @close="showDeleteConfirm = false; deleteConfirmAction = null"
+      confirm-text="Delete"
+      @close="
+        showDeleteConfirm = false;
+        deleteConfirmAction = null;
+      "
       @confirm="handleDeleteConfirm"
     />
   </div>

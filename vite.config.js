@@ -19,8 +19,8 @@ export default defineConfig({
           build: {
             outDir: 'dist-electron',
             sourcemap: true,
-          }
-        }
+          },
+        },
       },
       {
         // Preload script
@@ -29,22 +29,22 @@ export default defineConfig({
           build: {
             outDir: 'dist-electron',
             sourcemap: true,
-          }
-        }
-      }
+          },
+        },
+      },
     ]),
-    renderer()
+    renderer(),
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
-    }
+      '@': path.resolve(__dirname, './src'),
+    },
   },
   server: {
-    port: 5173
+    port: 5173,
   },
   build: {
     outDir: 'dist',
-    emptyOutDir: true
-  }
+    emptyOutDir: true,
+  },
 });

@@ -198,6 +198,6 @@ export function useElectronAPI() {
     createDirectory,
     deleteDirectory,
     directoryExists,
-    renameItem
+    renameItem,
   };
 }

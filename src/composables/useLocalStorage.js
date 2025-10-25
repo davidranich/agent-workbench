@@ -1,6 +1,6 @@
 export function useLocalStorage() {
   const STORAGE_KEYS = {
-    LAST_DIRECTORY: 'agentWorkbench_lastDirectory'
+    LAST_DIRECTORY: 'agentWorkbench_lastDirectory',
   };
 
   const saveLastDirectory = (dirPath) => {
@@ -35,6 +35,6 @@ export function useLocalStorage() {
   return {
     saveLastDirectory,
     getLastDirectory,
-    clearLastDirectory
+    clearLastDirectory,
   };
 }

@@ -17,6 +17,7 @@ What are you trying to accomplish?
 ## What You've Tried
 
 Have you searched the documentation or existing issues?
+
 - [ ] Yes, I've checked the README
 - [ ] Yes, I've searched existing issues
 - [ ] Yes, I've checked the documentation

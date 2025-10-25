@@ -79,7 +79,9 @@ const startResize = () => {
 };
 
 const handleResize = (event) => {
-  if (!isResizing.value || !editorPaneRef.value) return;
+  if (!isResizing.value || !editorPaneRef.value) {
+    return;
+  }
 
   const container = editorPaneRef.value.parentElement;
   const containerRect = container.getBoundingClientRect();
@@ -124,7 +126,7 @@ onUnmounted(() => {
 const turndownService = new TurndownService({
   headingStyle: 'atx',
   codeBlockStyle: 'fenced',
-  bulletListMarker: '-'
+  bulletListMarker: '-',
 });
 
 // Configure marked with syntax highlighting using the new API
@@ -132,14 +134,14 @@ marked.use({
   breaks: true,
   gfm: true,
   headerIds: true,
-  mangle: false
+  mangle: false,
 });
 
 // Add custom renderer for code blocks with syntax highlighting
 const renderer = new marked.Renderer();
 const originalCodeRenderer = renderer.code.bind(renderer);
 
-renderer.code = function(code, infostring) {
+renderer.code = function (code, infostring) {
   const lang = infostring || '';
   console.log('Rendering code block with language:', lang);
 
@@ -161,7 +163,9 @@ marked.use({ renderer });
 
 // Render markdown with sanitization
 const renderMarkdown = (markdown) => {
-  if (!markdown) return '';
+  if (!markdown) {
+    return '';
+  }
   try {
     const rawHtml = marked.parse(markdown);
     // Configure DOMPurify to allow hljs classes for syntax highlighting and mark tags for search highlights
@@ -169,7 +173,7 @@ const renderMarkdown = (markdown) => {
       ADD_TAGS: ['mark'],
       ADD_ATTR: ['class'],
       ALLOWED_ATTR: ['class', 'href', 'title', 'alt', 'src'],
-      KEEP_CONTENT: true
+      KEEP_CONTENT: true,
     });
   } catch (error) {
     console.error('Error rendering markdown:', error);
@@ -179,7 +183,9 @@ const renderMarkdown = (markdown) => {
 
 // Render markdown with search highlighting
 const renderMarkdownWithHighlights = computed(() => {
-  if (!agentStore.fileContent) return '';
+  if (!agentStore.fileContent) {
+    return '';
+  }
 
   // Render the markdown first
   let html = renderMarkdown(agentStore.fileContent);
@@ -206,13 +212,17 @@ const renderMarkdownWithHighlights = computed(() => {
 // Scroll synchronization - improved for fluid sync
 const handleEditorScroll = () => {
   const activeEditor = editMode.value === 'markdown' ? editorRef.value : richEditorRef.value;
-  if (!activeEditor || !previewRef.value || isSyncing) return;
+  if (!activeEditor || !previewRef.value || isSyncing) {
+    return;
+  }
 
   isSyncing = true;
 
   requestAnimationFrame(() => {
-    const scrollPercentage = activeEditor.scrollTop / (activeEditor.scrollHeight - activeEditor.clientHeight);
-    const targetScrollTop = scrollPercentage * (previewRef.value.scrollHeight - previewRef.value.clientHeight);
+    const scrollPercentage =
+      activeEditor.scrollTop / (activeEditor.scrollHeight - activeEditor.clientHeight);
+    const targetScrollTop =
+      scrollPercentage * (previewRef.value.scrollHeight - previewRef.value.clientHeight);
 
     previewRef.value.scrollTop = targetScrollTop;
 
@@ -224,13 +234,17 @@ const handleEditorScroll = () => {
 
 const handlePreviewScroll = () => {
   const activeEditor = editMode.value === 'markdown' ? editorRef.value : richEditorRef.value;
-  if (!activeEditor || !previewRef.value || isSyncing) return;
+  if (!activeEditor || !previewRef.value || isSyncing) {
+    return;
+  }
 
   isSyncing = true;
 
   requestAnimationFrame(() => {
-    const scrollPercentage = previewRef.value.scrollTop / (previewRef.value.scrollHeight - previewRef.value.clientHeight);
-    const targetScrollTop = scrollPercentage * (activeEditor.scrollHeight - activeEditor.clientHeight);
+    const scrollPercentage =
+      previewRef.value.scrollTop / (previewRef.value.scrollHeight - previewRef.value.clientHeight);
+    const targetScrollTop =
+      scrollPercentage * (activeEditor.scrollHeight - activeEditor.clientHeight);
 
     activeEditor.scrollTop = targetScrollTop;
 
@@ -242,7 +256,7 @@ const handlePreviewScroll = () => {
 
 const content = computed({
   get: () => agentStore.fileContent,
-  set: (value) => agentStore.updateFileContent(value)
+  set: (value) => agentStore.updateFileContent(value),
 });
 
 // Rich text content (for contenteditable)
@@ -250,11 +264,15 @@ const richContent = ref('');
 let isEditingRichText = false;
 
 // Update rich content when file changes or mode switches (but not while actively editing)
-watch([() => agentStore.fileContent, editMode], () => {
-  if (editMode.value === 'richtext' && !isEditingRichText) {
-    richContent.value = renderMarkdown(agentStore.fileContent);
-  }
-}, { immediate: true });
+watch(
+  [() => agentStore.fileContent, editMode],
+  () => {
+    if (editMode.value === 'richtext' && !isEditingRichText) {
+      richContent.value = renderMarkdown(agentStore.fileContent);
+    }
+  },
+  { immediate: true }
+);
 
 // Clear search highlights when find dialog closes
 watch(showFindReplace, (newVal) => {
@@ -376,10 +394,7 @@ const handleKeydown = (event) => {
     const spaces = '  '; // 2 spaces (you can change to '    ' for 4 spaces)
 
     // Insert spaces at cursor position
-    const newValue =
-      textarea.value.substring(0, start) +
-      spaces +
-      textarea.value.substring(end);
+    const newValue = textarea.value.substring(0, start) + spaces + textarea.value.substring(end);
 
     // Update the content
     content.value = newValue;
@@ -412,7 +427,9 @@ const handleKeydown = (event) => {
 // Find/Replace functionality
 const handleFindNext = (searchData, keepFocus = false) => {
   const textarea = editMode.value === 'markdown' ? editorRef.value : richEditorRef.value;
-  if (!textarea || !agentStore.fileContent) return;
+  if (!textarea || !agentStore.fileContent) {
+    return;
+  }
 
   const { text, caseSensitive } = searchData;
 
@@ -424,7 +441,9 @@ const handleFindNext = (searchData, keepFocus = false) => {
   updateMatchCount(searchData);
 
   // If search is empty, just return
-  if (!text) return;
+  if (!text) {
+    return;
+  }
 
   const content = agentStore.fileContent;
   const searchText = caseSensitive ? text : text.toLowerCase();
@@ -440,7 +459,7 @@ const handleFindNext = (searchData, keepFocus = false) => {
     : selectedText.toLowerCase() === searchText;
 
   // Start searching from after the current selection if it matches, otherwise from cursor
-  const startPos = (hasSelection && selectedMatches) ? selectionEnd : selectionStart;
+  const startPos = hasSelection && selectedMatches ? selectionEnd : selectionStart;
   let index = searchContent.indexOf(searchText, startPos);
 
   // If not found after cursor, wrap around to start
@@ -475,7 +494,9 @@ const handleFindNext = (searchData, keepFocus = false) => {
 
 const handleFindPrevious = (searchData, keepFocus = false) => {
   const textarea = editMode.value === 'markdown' ? editorRef.value : richEditorRef.value;
-  if (!textarea || !agentStore.fileContent) return;
+  if (!textarea || !agentStore.fileContent) {
+    return;
+  }
 
   const { text, caseSensitive } = searchData;
 
@@ -487,7 +508,9 @@ const handleFindPrevious = (searchData, keepFocus = false) => {
   updateMatchCount(searchData);
 
   // If search is empty, just return
-  if (!text) return;
+  if (!text) {
+    return;
+  }
 
   const content = agentStore.fileContent;
   const searchText = caseSensitive ? text : text.toLowerCase();
@@ -503,7 +526,7 @@ const handleFindPrevious = (searchData, keepFocus = false) => {
     : selectedText.toLowerCase() === searchText;
 
   // Start searching backwards from before the current selection if it matches, otherwise from cursor
-  const startPos = (hasSelection && selectedMatches) ? selectionStart - 1 : selectionStart - 1;
+  const startPos = hasSelection && selectedMatches ? selectionStart - 1 : selectionStart - 1;
   let index = searchContent.lastIndexOf(searchText, startPos);
 
   // If not found before cursor, wrap around to end
@@ -538,7 +561,9 @@ const handleFindPrevious = (searchData, keepFocus = false) => {
 
 const handleReplace = (replaceData) => {
   const textarea = editMode.value === 'markdown' ? editorRef.value : richEditorRef.value;
-  if (!textarea || !agentStore.fileContent) return;
+  if (!textarea || !agentStore.fileContent) {
+    return;
+  }
 
   const { find, replace, caseSensitive } = replaceData;
   const selectionStart = textarea.selectionStart;
@@ -636,13 +661,12 @@ const openReplace = () => {
 <template>
   <div class="flex flex-col h-full bg-white dark:bg-gray-900">
     <!-- Editor Header -->
-    <div class="h-14 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-6">
+    <div
+      class="h-14 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-6"
+    >
       <div class="flex items-center gap-3">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Editor</h2>
-        <span
-          v-if="agentStore.currentFileName"
-          class="text-sm text-gray-600 dark:text-gray-400"
-        >
+        <span v-if="agentStore.currentFileName" class="text-sm text-gray-600 dark:text-gray-400">
           {{ agentStore.currentFileName }}
         </span>
         <span
@@ -655,37 +679,37 @@ const openReplace = () => {
       <div class="flex items-center gap-3">
         <button
           v-if="agentStore.selectedFile"
-          @click="openFind"
           class="px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg transition-colors text-sm font-medium flex items-center gap-2"
           title="Find (Cmd/Ctrl+F)"
+          @click="openFind"
         >
           <font-awesome-icon icon="search" />
         </button>
         <button
           v-if="agentStore.selectedFile"
-          @click="openReplace"
           class="px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg transition-colors text-sm font-medium flex items-center gap-2"
           title="Find & Replace (Cmd/Ctrl+H)"
+          @click="openReplace"
         >
           <font-awesome-icon icon="rotate" />
         </button>
         <button
           v-if="agentStore.selectedFile"
-          @click="toggleEditMode"
           class="px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg transition-colors text-sm font-medium flex items-center gap-2"
           title="Toggle edit mode"
+          @click="toggleEditMode"
         >
           <font-awesome-icon icon="repeat" />
           Swap
         </button>
         <button
           v-if="agentStore.selectedFile"
-          @click="saveFile"
           :disabled="!agentStore.hasUnsavedChanges"
           class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-200 disabled:text-gray-400 dark:disabled:bg-gray-700 dark:disabled:text-gray-500 text-white rounded-lg transition-colors text-sm font-medium"
           :class="{
-            'cursor-not-allowed': !agentStore.hasUnsavedChanges
+            'cursor-not-allowed': !agentStore.hasUnsavedChanges,
           }"
+          @click="saveFile"
         >
           Save
         </button>
@@ -700,8 +724,12 @@ const openReplace = () => {
         class="flex flex-col border-r border-gray-200 dark:border-gray-700"
         :style="{ width: editorWidth + '%' }"
       >
-        <div class="px-4 py-2 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
-          <h3 class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+        <div
+          class="px-4 py-2 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700"
+        >
+          <h3
+            class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider"
+          >
             {{ editMode === 'markdown' ? 'Markdown' : 'Rich Text Editor' }}
           </h3>
         </div>
@@ -714,37 +742,37 @@ const openReplace = () => {
           <!-- Text Formatting -->
           <div class="flex gap-1 border-r border-gray-300 dark:border-gray-600 pr-2">
             <button
-              @click="formatBold"
               class="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded transition-colors"
               title="Bold (Ctrl+B)"
+              @click="formatBold"
             >
               <font-awesome-icon icon="bold" />
             </button>
             <button
-              @click="formatItalic"
               class="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded transition-colors"
               title="Italic (Ctrl+I)"
+              @click="formatItalic"
             >
               <font-awesome-icon icon="italic" />
             </button>
             <button
-              @click="formatUnderline"
               class="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded transition-colors"
               title="Underline (Ctrl+U)"
+              @click="formatUnderline"
             >
               <font-awesome-icon icon="underline" />
             </button>
             <button
-              @click="formatStrikethrough"
               class="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded transition-colors"
               title="Strikethrough"
+              @click="formatStrikethrough"
             >
               <font-awesome-icon icon="strikethrough" />
             </button>
             <button
-              @click="clearFormatting"
               class="px-2 py-1 text-xs bg-red-600 dark:bg-red-700 hover:bg-red-700 dark:hover:bg-red-600 text-white rounded transition-colors"
               title="Clear Formatting"
+              @click="clearFormatting"
             >
               <font-awesome-icon icon="eraser" />
             </button>
@@ -753,23 +781,23 @@ const openReplace = () => {
           <!-- Headings -->
           <div class="flex gap-1 border-r border-gray-300 dark:border-gray-600 pr-2">
             <button
-              @click="formatHeading(1)"
               class="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded transition-colors"
               title="Heading 1"
+              @click="formatHeading(1)"
             >
               H1
             </button>
             <button
-              @click="formatHeading(2)"
               class="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded transition-colors"
               title="Heading 2"
+              @click="formatHeading(2)"
             >
               H2
             </button>
             <button
-              @click="formatHeading(3)"
               class="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded transition-colors"
               title="Heading 3"
+              @click="formatHeading(3)"
             >
               H3
             </button>
@@ -778,16 +806,16 @@ const openReplace = () => {
           <!-- Lists -->
           <div class="flex gap-1 border-r border-gray-300 dark:border-gray-600 pr-2">
             <button
-              @click="formatUnorderedList"
               class="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded transition-colors"
               title="Bullet List"
+              @click="formatUnorderedList"
             >
               <font-awesome-icon icon="list-ul" />
             </button>
             <button
-              @click="formatOrderedList"
               class="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded transition-colors"
               title="Numbered List"
+              @click="formatOrderedList"
             >
               <font-awesome-icon icon="list-ol" />
             </button>
@@ -796,30 +824,30 @@ const openReplace = () => {
           <!-- Special -->
           <div class="flex gap-1">
             <button
-              @click="insertLink"
               class="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded transition-colors"
               title="Insert Link"
+              @click="insertLink"
             >
               <font-awesome-icon icon="link" />
             </button>
             <button
-              @click="formatCode"
               class="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded transition-colors"
               title="Code"
+              @click="formatCode"
             >
               <font-awesome-icon icon="code" />
             </button>
             <button
-              @click="formatBlockquote"
               class="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded transition-colors"
               title="Quote"
+              @click="formatBlockquote"
             >
               <font-awesome-icon icon="quote-left" />
             </button>
             <button
-              @click="insertHorizontalRule"
               class="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded transition-colors"
               title="Horizontal Rule"
+              @click="insertHorizontalRule"
             >
               <font-awesome-icon icon="minus" />
             </button>
@@ -832,11 +860,11 @@ const openReplace = () => {
             v-if="agentStore.selectedFile && editMode === 'markdown'"
             ref="editorRef"
             v-model="content"
-            @keydown="handleKeydown"
-            @scroll="handleEditorScroll"
             class="w-full h-full p-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-mono text-sm resize-none focus:outline-none leading-relaxed"
             placeholder="Start writing your agent instructions..."
             spellcheck="false"
+            @keydown="handleKeydown"
+            @scroll="handleEditorScroll"
           ></textarea>
 
           <!-- Rich Text Editor -->
@@ -844,12 +872,12 @@ const openReplace = () => {
             v-else-if="agentStore.selectedFile && editMode === 'richtext'"
             ref="richEditorRef"
             contenteditable="true"
+            class="w-full h-full p-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm overflow-y-auto focus:outline-none leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+            spellcheck="false"
             @input="handleRichTextInput"
             @keydown="handleKeydown"
             @scroll="handleEditorScroll"
             v-html="richContent"
-            class="w-full h-full p-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 text-sm overflow-y-auto focus:outline-none leading-relaxed prose prose-sm dark:prose-invert max-w-none"
-            spellcheck="false"
           ></div>
 
           <!-- Empty State -->
@@ -871,19 +899,23 @@ const openReplace = () => {
 
       <!-- Resize Handle -->
       <div
-        @mousedown="startResize"
         class="w-1 bg-gray-300 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-blue-500 cursor-col-resize transition-colors flex-shrink-0"
         :class="{ 'bg-blue-500 dark:bg-blue-500': isResizing }"
+        @mousedown="startResize"
       ></div>
 
       <!-- Right Panel (Preview) -->
       <div
         ref="previewPaneRef"
         class="flex flex-col bg-gray-50 dark:bg-gray-900"
-        :style="{ width: (100 - editorWidth) + '%' }"
+        :style="{ width: 100 - editorWidth + '%' }"
       >
-        <div class="px-4 py-2 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
-          <h3 class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+        <div
+          class="px-4 py-2 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700"
+        >
+          <h3
+            class="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider"
+          >
             {{ editMode === 'markdown' ? 'Rich Text Preview' : 'Markdown Preview' }}
           </h3>
         </div>
@@ -903,7 +935,8 @@ const openReplace = () => {
           <pre
             v-else-if="agentStore.selectedFile && agentStore.fileContent && editMode === 'richtext'"
             class="text-gray-700 dark:text-gray-300 font-mono text-xs leading-relaxed whitespace-pre-wrap"
-          >{{ agentStore.fileContent }}</pre>
+            >{{ agentStore.fileContent }}</pre
+          >
 
           <!-- Empty State -->
           <div
@@ -939,13 +972,13 @@ const openReplace = () => {
 
 <style>
 /* Contenteditable Rich Text Editor */
-[contenteditable="true"] {
+[contenteditable='true'] {
   outline: none;
   cursor: text;
 }
 
-[contenteditable="true"]:empty:before {
-  content: "Start writing your agent instructions...";
+[contenteditable='true']:empty:before {
+  content: 'Start writing your agent instructions...';
   color: #6b7280;
 }
 
@@ -1331,7 +1364,7 @@ const openReplace = () => {
 }
 
 /* Task lists (GitHub style) */
-.prose input[type="checkbox"] {
+.prose input[type='checkbox'] {
   margin-right: 0.5em;
 }
 

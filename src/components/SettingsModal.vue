@@ -236,8 +236,14 @@ const handleColorChange = (colorKey, value) => {
 
 const handleCreateNewTheme = () => {
   // Find the first available slot
-  const availableSlot = ['custom_01', 'custom_02', 'custom_03', 'custom_04', 'custom_05', 'custom_06']
-    .find(key => !customThemeNames.value[key]);
+  const availableSlot = [
+    'custom_01',
+    'custom_02',
+    'custom_03',
+    'custom_04',
+    'custom_05',
+    'custom_06',
+  ].find((key) => !customThemeNames.value[key]);
 
   if (!availableSlot) {
     saveError.value = 'All theme slots are full. Delete a theme to create a new one.';
@@ -282,8 +288,14 @@ const handleCreateNewTheme = () => {
 
 const handleCloneTheme = () => {
   // Find the first available slot
-  const availableSlot = ['custom_01', 'custom_02', 'custom_03', 'custom_04', 'custom_05', 'custom_06']
-    .find(key => !customThemeNames.value[key]);
+  const availableSlot = [
+    'custom_01',
+    'custom_02',
+    'custom_03',
+    'custom_04',
+    'custom_05',
+    'custom_06',
+  ].find((key) => !customThemeNames.value[key]);
 
   if (!availableSlot) {
     saveError.value = 'All theme slots are full (maximum 6). Delete a theme to clone a new one.';
@@ -350,17 +362,21 @@ const handleCloneTheme = () => {
       class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
       @click.self="handleClose"
     >
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-[700px] max-h-[80vh] flex flex-col">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-[700px] max-h-[80vh] flex flex-col"
+      >
         <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <div
+          class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700"
+        >
           <div class="flex items-center gap-3">
             <font-awesome-icon icon="cog" class="text-gray-600 dark:text-gray-400" size="lg" />
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">Settings</h2>
           </div>
           <button
-            @click="handleClose"
             class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
             title="Close settings"
+            @click="handleClose"
           >
             <font-awesome-icon icon="times" class="text-gray-600 dark:text-gray-400" />
           </button>
@@ -373,11 +389,13 @@ const handleCloneTheme = () => {
             <button
               v-for="tab in tabs"
               :key="tab.id"
-              @click="activeTab = tab.id"
               class="w-full px-4 py-3 text-left rounded-lg transition-colors flex items-center gap-3"
-              :class="activeTab === tab.id
-                ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+              :class="
+                activeTab === tab.id
+                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+              "
+              @click="activeTab = tab.id"
             >
               <font-awesome-icon :icon="tab.icon" class="w-4" />
               <span class="text-sm">{{ tab.label }}</span>
@@ -396,21 +414,25 @@ const handleCloneTheme = () => {
                   <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Theme</label>
                   <div class="flex gap-3">
                     <button
-                      @click="setTheme('light')"
                       class="flex-1 px-4 py-3 rounded-lg border-2 transition-all flex items-center justify-center gap-2"
-                      :class="currentTheme === 'light'
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                      :class="
+                        currentTheme === 'light'
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
+                      "
+                      @click="setTheme('light')"
                     >
                       <font-awesome-icon icon="sun" />
                       <span>Light</span>
                     </button>
                     <button
-                      @click="setTheme('dark')"
                       class="flex-1 px-4 py-3 rounded-lg border-2 transition-all flex items-center justify-center gap-2"
-                      :class="currentTheme === 'dark'
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                      :class="
+                        currentTheme === 'dark'
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
+                      "
+                      @click="setTheme('dark')"
                     >
                       <font-awesome-icon icon="moon" />
                       <span>Dark</span>
@@ -420,22 +442,27 @@ const handleCloneTheme = () => {
 
                 <!-- Clone Current Theme -->
                 <div class="space-y-3">
-                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Quick Actions</label>
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >Quick Actions</label
+                  >
                   <button
-                    @click="handleCloneTheme"
-                    :disabled="Object.values(customThemeNames).filter(name => name).length >= 6"
+                    :disabled="Object.values(customThemeNames).filter((name) => name).length >= 6"
                     class="w-full px-4 py-3 rounded-lg border-2 text-sm font-medium flex items-center justify-center gap-2 transition-all disabled:cursor-not-allowed disabled:opacity-60"
-                    :class="Object.values(customThemeNames).filter(name => name).length >= 6
-                      ? 'border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-gray-800'
-                      : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900 hover:text-blue-700 dark:hover:text-blue-300'"
+                    :class="
+                      Object.values(customThemeNames).filter((name) => name).length >= 6
+                        ? 'border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-gray-800'
+                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900 hover:text-blue-700 dark:hover:text-blue-300'
+                    "
                     title="Create a copy of the current theme"
+                    @click="handleCloneTheme"
                   >
                     <font-awesome-icon icon="copy" />
                     Clone Current Theme
                   </button>
                   <p class="text-xs text-gray-500 dark:text-gray-500">
-                    <span v-if="Object.values(customThemeNames).filter(name => name).length >= 6">
-                      You have reached the maximum number of custom themes (6). You must delete one first.
+                    <span v-if="Object.values(customThemeNames).filter((name) => name).length >= 6">
+                      You have reached the maximum number of custom themes (6). You must delete one
+                      first.
                     </span>
                     <span v-else>
                       Creates a copy of "{{ getCurrentThemeName() }}" that you can customize.
@@ -444,10 +471,12 @@ const handleCloneTheme = () => {
                 </div>
 
                 <!-- Default Themes Section (Collapsible) -->
-                <div class="mt-6 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                <div
+                  class="mt-6 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden"
+                >
                   <button
-                    @click="showDefaultThemes = !showDefaultThemes"
                     class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors flex items-center justify-between"
+                    @click="showDefaultThemes = !showDefaultThemes"
                   >
                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
                       <span v-if="currentTheme === 'light'">Default Light Themes</span>
@@ -466,11 +495,13 @@ const handleCloneTheme = () => {
                         <button
                           v-for="(label, key) in COLOR_SCHEME_LABELS_LIGHT"
                           :key="key"
-                          @click="setColorSchemeLight(key)"
                           class="px-4 py-3 rounded-lg border-2 transition-all text-sm"
-                          :class="colorSchemeLight === key
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
-                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                          :class="
+                            colorSchemeLight === key
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                              : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
+                          "
+                          @click="setColorSchemeLight(key)"
                         >
                           {{ label }}
                         </button>
@@ -483,11 +514,13 @@ const handleCloneTheme = () => {
                         <button
                           v-for="(label, key) in COLOR_SCHEME_LABELS"
                           :key="key"
-                          @click="setColorSchemeDark(key)"
                           class="px-4 py-3 rounded-lg border-2 transition-all text-sm"
-                          :class="colorSchemeDark === key
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
-                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                          :class="
+                            colorSchemeDark === key
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                              : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
+                          "
+                          @click="setColorSchemeDark(key)"
                         >
                           {{ label }}
                         </button>
@@ -497,15 +530,17 @@ const handleCloneTheme = () => {
                 </div>
 
                 <!-- Custom Themes Section (Collapsible) -->
-                <div class="mt-6 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                <div
+                  class="mt-6 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden"
+                >
                   <button
-                    @click="showCustomThemes = !showCustomThemes"
                     class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors flex items-center justify-between"
+                    @click="showCustomThemes = !showCustomThemes"
                   >
                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
                       <span v-if="currentTheme === 'light'">Custom Light Themes</span>
                       <span v-else>Custom Dark Themes</span>
-                      ({{ Object.values(customThemeNames).filter(name => name).length }})
+                      ({{ Object.values(customThemeNames).filter((name) => name).length }})
                     </span>
                     <font-awesome-icon
                       :icon="showCustomThemes ? 'chevron-up' : 'chevron-down'"
@@ -517,37 +552,49 @@ const handleCloneTheme = () => {
                     <div v-if="currentTheme === 'light'" class="space-y-3">
                       <div class="grid grid-cols-2 gap-3">
                         <button
-                          v-for="slotKey in ['custom_01', 'custom_02', 'custom_03', 'custom_04', 'custom_05', 'custom_06']"
-                          :key="`light-${slotKey}`"
+                          v-for="slotKey in [
+                            'custom_01',
+                            'custom_02',
+                            'custom_03',
+                            'custom_04',
+                            'custom_05',
+                            'custom_06',
+                          ]"
                           v-show="customThemeNames[slotKey]"
-                          @click="setColorSchemeLight(slotKey)"
+                          :key="`light-${slotKey}`"
                           class="px-4 py-3 rounded-lg border-2 transition-all text-sm relative group"
-                          :class="colorSchemeLight === slotKey
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
-                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                          :class="
+                            colorSchemeLight === slotKey
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                              : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
+                          "
+                          @click="setColorSchemeLight(slotKey)"
                         >
                           {{ customThemeNames[slotKey] }}
                           <button
-                            @click.stop="handleClearSlot(slotKey)"
                             class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded transition-all"
                             title="Delete theme"
+                            @click.stop="handleClearSlot(slotKey)"
                           >
-                            <font-awesome-icon icon="trash" class="text-red-600 dark:text-red-400 text-xs" />
+                            <font-awesome-icon
+                              icon="trash"
+                              class="text-red-600 dark:text-red-400 text-xs"
+                            />
                           </button>
                         </button>
                       </div>
 
                       <!-- Create New Theme Button -->
                       <button
-                        @click="handleCreateNewTheme"
                         class="w-full px-4 py-3 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:text-blue-700 dark:hover:text-blue-300 transition-all text-sm font-medium flex items-center justify-center gap-2"
+                        @click="handleCreateNewTheme"
                       >
                         <font-awesome-icon icon="plus" />
                         Create New Theme
                       </button>
 
                       <p
-                        v-if="!Object.values(customThemeNames).some(name => name)"
+                        v-if="!Object.values(customThemeNames).some((name) => name)"
                         class="text-xs text-gray-500 dark:text-gray-500"
                       >
                         Click "Create New Theme" to get started.
@@ -558,37 +605,49 @@ const handleCloneTheme = () => {
                     <div v-if="currentTheme === 'dark'" class="space-y-3">
                       <div class="grid grid-cols-2 gap-3">
                         <button
-                          v-for="slotKey in ['custom_01', 'custom_02', 'custom_03', 'custom_04', 'custom_05', 'custom_06']"
-                          :key="`dark-${slotKey}`"
+                          v-for="slotKey in [
+                            'custom_01',
+                            'custom_02',
+                            'custom_03',
+                            'custom_04',
+                            'custom_05',
+                            'custom_06',
+                          ]"
                           v-show="customThemeNames[slotKey]"
-                          @click="setColorSchemeDark(slotKey)"
+                          :key="`dark-${slotKey}`"
                           class="px-4 py-3 rounded-lg border-2 transition-all text-sm relative group"
-                          :class="colorSchemeDark === slotKey
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
-                            : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                          :class="
+                            colorSchemeDark === slotKey
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                              : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
+                          "
+                          @click="setColorSchemeDark(slotKey)"
                         >
                           {{ customThemeNames[slotKey] }}
                           <button
-                            @click.stop="handleClearSlot(slotKey)"
                             class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded transition-all"
                             title="Delete theme"
+                            @click.stop="handleClearSlot(slotKey)"
                           >
-                            <font-awesome-icon icon="trash" class="text-red-600 dark:text-red-400 text-xs" />
+                            <font-awesome-icon
+                              icon="trash"
+                              class="text-red-600 dark:text-red-400 text-xs"
+                            />
                           </button>
                         </button>
                       </div>
 
                       <!-- Create New Theme Button -->
                       <button
-                        @click="handleCreateNewTheme"
                         class="w-full px-4 py-3 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:text-blue-700 dark:hover:text-blue-300 transition-all text-sm font-medium flex items-center justify-center gap-2"
+                        @click="handleCreateNewTheme"
                       >
                         <font-awesome-icon icon="plus" />
                         Create New Theme
                       </button>
 
                       <p
-                        v-if="!Object.values(customThemeNames).some(name => name)"
+                        v-if="!Object.values(customThemeNames).some((name) => name)"
                         class="text-xs text-gray-500 dark:text-gray-500"
                       >
                         Click "Create New Theme" to get started.
@@ -602,17 +661,23 @@ const handleCloneTheme = () => {
             <!-- Custom Theme Tab -->
             <div v-if="activeTab === 'custom-theme'" class="space-y-6">
               <div>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Customize Theme</h3>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Customize Theme
+                </h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  Editing: {{ getCurrentThemeName() || 'Current Theme' }} ({{ currentTheme === 'light' ? 'Light Mode' : 'Dark Mode' }})
+                  Editing: {{ getCurrentThemeName() || 'Current Theme' }} ({{
+                    currentTheme === 'light' ? 'Light Mode' : 'Dark Mode'
+                  }})
                 </p>
 
                 <!-- Theme Name Input -->
                 <div class="space-y-2 mb-6">
-                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Theme Name</label>
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >Theme Name</label
+                  >
                   <input
-                    type="text"
                     v-model="themeName"
+                    type="text"
                     :disabled="isDefaultTheme()"
                     placeholder="Enter theme name..."
                     class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
@@ -630,15 +695,15 @@ const handleCloneTheme = () => {
                     <input
                       type="color"
                       :value="currentColors[key]"
-                      @input="handleColorChange(key, $event.target.value)"
                       class="w-16 h-8 border border-gray-300 dark:border-gray-600 rounded cursor-pointer"
+                      @input="handleColorChange(key, $event.target.value)"
                     />
                     <input
                       type="text"
                       :value="currentColors[key]"
-                      @input="handleColorChange(key, $event.target.value)"
                       placeholder="#000000"
                       class="flex-1 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                      @input="handleColorChange(key, $event.target.value)"
                     />
                   </div>
                 </div>
@@ -646,26 +711,32 @@ const handleCloneTheme = () => {
                 <!-- Action Buttons -->
                 <div class="flex gap-3 mb-4">
                   <button
-                    @click="handleDeleteTheme"
                     :disabled="isDefaultTheme()"
                     class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm font-medium disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-500 disabled:cursor-not-allowed disabled:opacity-60 disabled:border-2 disabled:border-gray-400 dark:disabled:border-gray-600"
+                    @click="handleDeleteTheme"
                   >
                     Delete Theme
                   </button>
                   <button
-                    @click="handleSaveTheme"
                     :disabled="isDefaultTheme()"
                     class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-500 disabled:cursor-not-allowed disabled:opacity-60 disabled:border-2 disabled:border-gray-400 dark:disabled:border-gray-600"
+                    @click="handleSaveTheme"
                   >
                     Save Theme
                   </button>
                 </div>
 
                 <!-- Success/Error Messages -->
-                <div v-if="saveMessage" class="p-3 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg">
+                <div
+                  v-if="saveMessage"
+                  class="p-3 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg"
+                >
                   <p class="text-sm text-green-800 dark:text-green-300">{{ saveMessage }}</p>
                 </div>
-                <div v-if="saveError" class="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
+                <div
+                  v-if="saveError"
+                  class="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg"
+                >
                   <p class="text-sm text-red-800 dark:text-red-300">{{ saveError }}</p>
                 </div>
               </div>
@@ -674,20 +745,26 @@ const handleCloneTheme = () => {
             <!-- Accessibility Tab -->
             <div v-if="activeTab === 'accessibility'" class="space-y-6">
               <div>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Accessibility</h3>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Accessibility
+                </h3>
 
                 <!-- Font Size -->
                 <div class="space-y-3">
-                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Font Size</label>
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >Font Size</label
+                  >
                   <div class="grid grid-cols-2 gap-3">
                     <button
                       v-for="(label, key) in FONT_SIZE_LABELS"
                       :key="key"
-                      @click="setFontSize(key)"
                       class="px-4 py-3 rounded-lg border-2 transition-all"
-                      :class="fontSize === key
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                      :class="
+                        fontSize === key
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
+                      "
+                      @click="setFontSize(key)"
                     >
                       <span class="text-sm">{{ label }}</span>
                     </button>
@@ -710,23 +787,30 @@ const handleCloneTheme = () => {
             <!-- Terminal Tab -->
             <div v-if="activeTab === 'terminal'" class="space-y-6">
               <div>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Terminal (iTerm2 only)</h3>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Terminal (iTerm2 only)
+                </h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                  Configure how Claude Code launches in iTerm2. These settings only apply when iTerm2 is selected as your terminal.
+                  Configure how Claude Code launches in iTerm2. These settings only apply when
+                  iTerm2 is selected as your terminal.
                 </p>
 
                 <!-- Window Mode -->
                 <div class="space-y-3">
-                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Window Mode</label>
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >Window Mode</label
+                  >
                   <div class="grid grid-cols-2 gap-3">
                     <button
                       v-for="(label, key) in TERMINAL_WINDOW_MODE_LABELS"
                       :key="key"
-                      @click="setTerminalWindowMode(key)"
                       class="px-4 py-3 rounded-lg border-2 transition-all text-sm"
-                      :class="terminalWindowMode === key
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                      :class="
+                        terminalWindowMode === key
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
+                      "
+                      @click="setTerminalWindowMode(key)"
                     >
                       {{ label }}
                     </button>
@@ -738,44 +822,55 @@ const handleCloneTheme = () => {
 
                 <!-- Show Split Pane -->
                 <div class="space-y-3 mt-6">
-                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Split Pane</label>
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >Split Pane</label
+                  >
                   <div class="flex items-center gap-3">
                     <button
-                      @click="setTerminalShowSplit(true)"
                       class="flex-1 px-4 py-3 rounded-lg border-2 transition-all text-sm"
-                      :class="terminalShowSplit
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                      :class="
+                        terminalShowSplit
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
+                      "
+                      @click="setTerminalShowSplit(true)"
                     >
                       Show Split
                     </button>
                     <button
-                      @click="setTerminalShowSplit(false)"
                       class="flex-1 px-4 py-3 rounded-lg border-2 transition-all text-sm"
-                      :class="!terminalShowSplit
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                      :class="
+                        !terminalShowSplit
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
+                      "
+                      @click="setTerminalShowSplit(false)"
                     >
                       No Split
                     </button>
                   </div>
                   <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    Enable to automatically create a split pane with a regular terminal in the same directory.
+                    Enable to automatically create a split pane with a regular terminal in the same
+                    directory.
                   </p>
                 </div>
 
                 <!-- Split Direction (only shown when split is enabled) -->
                 <div v-if="terminalShowSplit" class="space-y-3 mt-6">
-                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Split Direction</label>
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >Split Direction</label
+                  >
                   <div class="grid grid-cols-1 gap-3">
                     <button
                       v-for="(label, key) in TERMINAL_SPLIT_DIRECTION_LABELS"
                       :key="key"
-                      @click="setTerminalSplitDirection(key)"
                       class="px-4 py-3 rounded-lg border-2 transition-all text-sm text-left"
-                      :class="terminalSplitDirection === key
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                      :class="
+                        terminalSplitDirection === key
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
+                      "
+                      @click="setTerminalSplitDirection(key)"
                     >
                       {{ label }}
                     </button>
@@ -787,32 +882,34 @@ const handleCloneTheme = () => {
 
                 <!-- Window Size (only for window mode) -->
                 <div v-if="terminalWindowMode === 'window'" class="space-y-3 mt-6">
-                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Window Size</label>
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >Window Size</label
+                  >
                   <div class="grid grid-cols-2 gap-4">
                     <!-- Width -->
                     <div class="space-y-2">
                       <label class="text-xs text-gray-600 dark:text-gray-400">Width (px)</label>
                       <input
-                        type="number"
                         v-model.number="terminalWindowWidth"
-                        @blur="setTerminalWindowWidth(terminalWindowWidth)"
+                        type="number"
                         min="800"
                         max="3000"
                         step="50"
                         class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        @blur="setTerminalWindowWidth(terminalWindowWidth)"
                       />
                     </div>
                     <!-- Height -->
                     <div class="space-y-2">
                       <label class="text-xs text-gray-600 dark:text-gray-400">Height (px)</label>
                       <input
-                        type="number"
                         v-model.number="terminalWindowHeight"
-                        @blur="setTerminalWindowHeight(terminalWindowHeight)"
+                        type="number"
                         min="300"
                         max="1500"
                         step="50"
                         class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        @blur="setTerminalWindowHeight(terminalWindowHeight)"
                       />
                     </div>
                   </div>
@@ -822,21 +919,31 @@ const handleCloneTheme = () => {
                 </div>
 
                 <!-- Preview Info Box -->
-                <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div
+                  class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg"
+                >
                   <div class="flex items-start gap-3">
-                    <font-awesome-icon icon="info-circle" class="text-blue-600 dark:text-blue-400 mt-0.5" />
+                    <font-awesome-icon
+                      icon="info-circle"
+                      class="text-blue-600 dark:text-blue-400 mt-0.5"
+                    />
                     <div class="flex-1">
-                      <p class="text-sm text-blue-900 dark:text-blue-300 font-medium mb-1">Preview</p>
+                      <p class="text-sm text-blue-900 dark:text-blue-300 font-medium mb-1">
+                        Preview
+                      </p>
                       <p class="text-xs text-blue-800 dark:text-blue-400">
-                        <span v-if="terminalWindowMode === 'window'">Will open a new iTerm window</span>
+                        <span v-if="terminalWindowMode === 'window'"
+                          >Will open a new iTerm window</span
+                        >
                         <span v-else>Will open a new tab in the current iTerm window</span>
                         <span v-if="terminalShowSplit">
-                          with Claude Code on the <span v-if="terminalSplitDirection === 'vertical'">left</span><span v-else>top</span>
-                          and a regular terminal on the <span v-if="terminalSplitDirection === 'vertical'">right</span><span v-else>bottom</span>.
+                          with Claude Code on the
+                          <span v-if="terminalSplitDirection === 'vertical'">left</span
+                          ><span v-else>top</span> and a regular terminal on the
+                          <span v-if="terminalSplitDirection === 'vertical'">right</span
+                          ><span v-else>bottom</span>.
                         </span>
-                        <span v-else>
-                          with Claude Code only.
-                        </span>
+                        <span v-else> with Claude Code only. </span>
                       </p>
                     </div>
                   </div>
@@ -847,10 +954,12 @@ const handleCloneTheme = () => {
         </div>
 
         <!-- Footer -->
-        <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+        <div
+          class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700"
+        >
           <button
-            @click="handleClose"
             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium"
+            @click="handleClose"
           >
             Done
           </button>
@@ -866,12 +975,16 @@ const handleCloneTheme = () => {
     >
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-[500px] flex flex-col">
         <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ deleteConfirmTitle }}</h3>
+        <div
+          class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700"
+        >
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+            {{ deleteConfirmTitle }}
+          </h3>
           <button
-            @click="cancelDelete"
             class="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
             title="Close"
+            @click="cancelDelete"
           >
             <font-awesome-icon icon="times" class="text-gray-600 dark:text-gray-400" />
           </button>
@@ -880,8 +993,13 @@ const handleCloneTheme = () => {
         <!-- Content -->
         <div class="px-6 py-4">
           <div class="flex items-start gap-3">
-            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-              <font-awesome-icon icon="exclamation-triangle" class="text-red-600 dark:text-red-400" />
+            <div
+              class="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center"
+            >
+              <font-awesome-icon
+                icon="exclamation-triangle"
+                class="text-red-600 dark:text-red-400"
+              />
             </div>
             <div class="flex-1">
               <p class="text-sm text-gray-700 dark:text-gray-300">
@@ -892,16 +1010,18 @@ const handleCloneTheme = () => {
         </div>
 
         <!-- Footer -->
-        <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+        <div
+          class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700"
+        >
           <button
-            @click="cancelDelete"
             class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 rounded-lg transition-colors text-sm font-medium"
+            @click="cancelDelete"
           >
             Cancel
           </button>
           <button
-            @click="confirmDelete"
             class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm font-medium"
+            @click="confirmDelete"
           >
             Delete
           </button>

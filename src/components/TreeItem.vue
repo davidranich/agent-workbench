@@ -3,7 +3,7 @@ import { inject, ref } from 'vue';
 
 const props = defineProps({
   item: Object,
-  level: Number
+  level: Number,
 });
 
 const emit = defineEmits(['click', 'delete', 'rename', 'move']);
@@ -34,8 +34,12 @@ function getFileIcon(item) {
   if (item.isDirectory) {
     return isExpanded(item.path) ? 'folder-open' : 'folder';
   }
-  if (item.name.endsWith('.md')) return 'file-lines';
-  if (item.name.endsWith('.txt')) return 'file';
+  if (item.name.endsWith('.md')) {
+    return 'file-lines';
+  }
+  if (item.name.endsWith('.txt')) {
+    return 'file';
+  }
 
   // Check for image files
   const ext = item.name.toLowerCase().split('.').pop();
@@ -50,11 +54,14 @@ function getFileIcon(item) {
 function handleDragStart(event) {
   isDragging.value = true;
   event.dataTransfer.effectAllowed = 'move';
-  event.dataTransfer.setData('text/plain', JSON.stringify({
-    path: props.item.path,
-    name: props.item.name,
-    isDirectory: props.item.isDirectory
-  }));
+  event.dataTransfer.setData(
+    'text/plain',
+    JSON.stringify({
+      path: props.item.path,
+      name: props.item.name,
+      isDirectory: props.item.isDirectory,
+    })
+  );
 }
 
 function handleDragEnd() {
@@ -63,7 +70,9 @@ function handleDragEnd() {
 
 function handleDragOver(event) {
   // Only allow dropping on directories
-  if (!props.item.isDirectory) return;
+  if (!props.item.isDirectory) {
+    return;
+  }
 
   event.preventDefault();
   event.dataTransfer.dropEffect = 'move';
@@ -71,7 +80,9 @@ function handleDragOver(event) {
 
 function handleDragEnter(event) {
   // Only allow dropping on directories
-  if (!props.item.isDirectory) return;
+  if (!props.item.isDirectory) {
+    return;
+  }
 
   event.preventDefault();
   isDropTarget.value = true;
@@ -88,21 +99,27 @@ function handleDrop(event) {
   isDropTarget.value = false;
 
   // Only allow dropping on directories
-  if (!props.item.isDirectory) return;
+  if (!props.item.isDirectory) {
+    return;
+  }
 
   try {
     const draggedData = JSON.parse(event.dataTransfer.getData('text/plain'));
 
     // Don't allow dropping on itself
-    if (draggedData.path === props.item.path) return;
+    if (draggedData.path === props.item.path) {
+      return;
+    }
 
     // Don't allow dropping a parent into its own child
-    if (props.item.path.startsWith(draggedData.path + '/')) return;
+    if (props.item.path.startsWith(draggedData.path + '/')) {
+      return;
+    }
 
     // Emit move event with source and destination
     emit('move', {
       source: draggedData,
-      destination: props.item
+      destination: props.item,
     });
   } catch (err) {
     console.error('Error handling drop:', err);
@@ -115,6 +132,15 @@ function handleDrop(event) {
     <div class="relative group">
       <button
         draggable="true"
+        class="w-full py-2.5 pr-20 text-left hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+        :class="{
+          'bg-gray-200 dark:bg-gray-700 border-l-2 border-blue-500': isSelected(item),
+          'border-l-2 border-transparent': !isSelected(item),
+          'px-4': level === 0,
+          'opacity-50': isDragging,
+          'bg-blue-100 dark:bg-blue-900 border-l-2 border-blue-500': isDropTarget,
+        }"
+        :style="level > 0 ? { paddingLeft: level * 16 + 16 + 'px' } : {}"
         @dragstart="handleDragStart"
         @dragend="handleDragEnd"
         @dragover="handleDragOver"
@@ -122,15 +148,6 @@ function handleDrop(event) {
         @dragleave="handleDragLeave"
         @drop="handleDrop"
         @click="handleClick"
-        class="w-full py-2.5 pr-20 text-left hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
-        :class="{
-          'bg-gray-200 dark:bg-gray-700 border-l-2 border-blue-500': isSelected(item),
-          'border-l-2 border-transparent': !isSelected(item),
-          'px-4': level === 0,
-          'opacity-50': isDragging,
-          'bg-blue-100 dark:bg-blue-900 border-l-2 border-blue-500': isDropTarget
-        }"
-        :style="level > 0 ? { paddingLeft: (level * 16 + 16) + 'px' } : {}"
       >
         <font-awesome-icon
           v-if="item.isDirectory"
@@ -154,18 +171,20 @@ function handleDrop(event) {
         ></div>
       </button>
       <!-- Action buttons (appear on hover, for both files and folders) -->
-      <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div
+        class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+      >
         <button
-          @click="handleRename"
           class="p-1.5 text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400 transition-colors"
           :title="item.isDirectory ? 'Rename folder' : 'Rename file'"
+          @click="handleRename"
         >
           <font-awesome-icon icon="pen" class="text-xs" />
         </button>
         <button
-          @click="handleDelete"
           class="p-1.5 text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 transition-colors"
           :title="item.isDirectory ? 'Delete folder' : 'Delete file'"
+          @click="handleDelete"
         >
           <font-awesome-icon icon="trash" class="text-xs" />
         </button>

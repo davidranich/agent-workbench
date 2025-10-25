@@ -13,6 +13,7 @@ Agent Workbench is an Electron-based desktop application that provides a compreh
 ## Features
 
 ### 📁 Directory Management
+
 - **Smart Directory Selection**: Choose any directory to work with (e.g., `~/.claude/agents`)
 - **Persistent Workspace**: Automatically remembers your last used directory
 - **Hierarchical File Browser**: Navigate your agent files with an intuitive collapsible tree view
@@ -21,6 +22,7 @@ Agent Workbench is an Electron-based desktop application that provides a compreh
 - **Real-time Updates**: File changes are tracked with unsaved indicators
 
 ### ✍️ Dual-Mode Editor
+
 - **Markdown Editor**: Write raw markdown with syntax highlighting and code block support
 - **Rich Text Editor**: WYSIWYG editor with formatting toolbar for visual editing
 - **Live Preview**: Real-time rendered markdown preview with syntax highlighting
@@ -30,30 +32,33 @@ Agent Workbench is an Electron-based desktop application that provides a compreh
 - **Auto-save**: Quick save with Cmd/Ctrl + S keyboard shortcut
 
 ### 🎨 Customization & Themes
+
 - **Light/Dark Mode**: Toggle between light and dark themes
 - **Multiple Color Schemes**:
   - Default Gray
   - Ayu Dark - Cool blue-black aesthetic
     - _(inspired by work from: [teabyii](https://vscodethemes.com/e/teabyii.ayu/ayu-dark-bordered))_
-  - Bearded Black & Gold - Warm brown with gold accents 
+  - Bearded Black & Gold - Warm brown with gold accents
     - _(inspired by work from: [BeardedBear](https://vscodethemes.com/e/BeardedBear.beardedtheme/bearded-theme-black-and-gold-soft))_
-  - Cyberpunk Scarlet - Neon magenta and cyan 
+  - Cyberpunk Scarlet - Neon magenta and cyan
     - _(inspired by work from: [Max](https://vscodethemes.com/e/max-SS.cyberpunk/activate-scarlet-protocol-beta))_
   - Eva Dark - Professional blue-gray tones
     - _(inspired by work from: [fisheva](https://vscodethemes.com/e/fisheva.eva-theme/eva-dark))_
-  - Gruvbox Dark Hard - Retro warm earthy tones 
+  - Gruvbox Dark Hard - Retro warm earthy tones
     - _(inspired by work from: [jdinhlife](https://vscodethemes.com/e/jdinhlife.gruvbox/gruvbox-dark-hard))_
 - **Separate Theme Modes**: Independent color schemes for light and dark modes
 - **Accessibility Options**: Adjustable font sizes (Small, Medium, Large, Extra Large)
 - **Theme-Aware Components**: All UI elements adapt to selected color scheme
 
 ### 🚀 Claude Code Integration
+
 - **Direct Launch**: Start Claude Code directly from the application
 - **Terminal Selection**: Choose between Terminal.app or iTerm2
 - **Workspace Context**: Automatically opens Claude Code in your selected directory
 - **Seamless Workflow**: Edit agents and test them without leaving the app
 
 ### 💡 Editor Features
+
 - **Syntax Highlighting**: Full highlight.js integration for 15+ languages
 - **Code Block Support**: Enhanced rendering for code snippets
 - **Markdown Tables**: Full table support with styling
@@ -63,6 +68,7 @@ Agent Workbench is an Electron-based desktop application that provides a compreh
 - **Format Toolbar**: One-click formatting (bold, italic, headings, lists, links, etc.)
 
 ### 🎯 User Experience
+
 - **Keyboard Shortcuts**: Efficient keyboard-driven workflow
 - **Responsive Design**: Smooth animations and transitions
 - **Error Handling**: Graceful degradation and user feedback
@@ -71,33 +77,39 @@ Agent Workbench is an Electron-based desktop application that provides a compreh
 ## Tech Stack
 
 ### Frontend
+
 - **Vue 3** - Composition API with `<script setup>`
 - **Pinia** - State management
 - **Vue Router** - Navigation
 - **TailwindCSS** - Utility-first styling with custom theme system
 
 ### Markdown & Rich Text
+
 - **marked** - Markdown parsing and rendering
 - **highlight.js** - Syntax highlighting for code blocks
 - **DOMPurify** - HTML sanitization
 - **TurndownService** - HTML to Markdown conversion
 
 ### Backend
+
 - **Electron** - Cross-platform desktop framework
 - **Node.js** - Backend runtime
 - **AppleScript** - Terminal integration on macOS
 
 ### Build Tools
+
 - **Vite** - Fast development and optimized builds
 - **electron-builder** - Application packaging
 
 ## Installation
 
 ### Prerequisites
+
 - Node.js (v16 or higher)
 - npm or yarn
 
 ### Setup
+
 ```bash
 # Clone the repository
 git clone https://github.com/davidranich/agent-workbench

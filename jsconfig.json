@@ -10,13 +10,6 @@
     "jsx": "preserve",
     "strict": true
   },
-  "include": [
-    "src/**/*",
-    "electron/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "dist-electron"
-  ]
+  "include": ["src/**/*", "electron/**/*"],
+  "exclude": ["node_modules", "dist", "dist-electron"]
 }

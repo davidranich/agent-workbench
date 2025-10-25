@@ -5,25 +5,25 @@ const props = defineProps({
   show: Boolean,
   title: {
     type: String,
-    default: 'Confirm Action'
+    default: 'Confirm Action',
   },
   message: {
     type: String,
-    required: true
+    required: true,
   },
   confirmText: {
     type: String,
-    default: 'Confirm'
+    default: 'Confirm',
   },
   cancelText: {
     type: String,
-    default: 'Cancel'
+    default: 'Cancel',
   },
   type: {
     type: String,
     default: 'warning', // warning, danger, info
-    validator: (value) => ['warning', 'danger', 'info'].includes(value)
-  }
+    validator: (value) => ['warning', 'danger', 'info'].includes(value),
+  },
 });
 
 const emit = defineEmits(['close', 'confirm']);
@@ -86,12 +86,14 @@ const getButtonClass = () => {
     >
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-[500px] flex flex-col">
         <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <div
+          class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700"
+        >
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ title }}</h3>
           <button
-            @click="handleCancel"
             class="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
             title="Close"
+            @click="handleCancel"
           >
             <font-awesome-icon icon="times" class="text-gray-600 dark:text-gray-400" />
           </button>
@@ -104,10 +106,7 @@ const getButtonClass = () => {
               class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
               :class="getBackgroundClass()"
             >
-              <font-awesome-icon
-                icon="exclamation-triangle"
-                :class="getIconClass()"
-              />
+              <font-awesome-icon icon="exclamation-triangle" :class="getIconClass()" />
             </div>
             <div class="flex-1">
               <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">
@@ -118,17 +117,19 @@ const getButtonClass = () => {
         </div>
 
         <!-- Footer -->
-        <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+        <div
+          class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700"
+        >
           <button
-            @click="handleCancel"
             class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 rounded-lg transition-colors text-sm font-medium"
+            @click="handleCancel"
           >
             {{ cancelText }}
           </button>
           <button
-            @click="handleConfirm"
             class="px-4 py-2 text-white rounded-lg transition-colors text-sm font-medium"
             :class="getButtonClass()"
+            @click="handleConfirm"
           >
             {{ confirmText }}
           </button>

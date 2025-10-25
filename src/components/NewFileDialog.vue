@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue';
 
 const props = defineProps({
-  show: Boolean
+  show: Boolean,
 });
 
 const emit = defineEmits(['close', 'create']);
@@ -10,12 +10,15 @@ const emit = defineEmits(['close', 'create']);
 const fileName = ref('');
 const errorMessage = ref('');
 
-watch(() => props.show, (newVal) => {
-  if (newVal) {
-    fileName.value = '';
-    errorMessage.value = '';
+watch(
+  () => props.show,
+  (newVal) => {
+    if (newVal) {
+      fileName.value = '';
+      errorMessage.value = '';
+    }
   }
-});
+);
 
 const handleCreate = () => {
   const trimmed = fileName.value.trim();
@@ -26,9 +29,7 @@ const handleCreate = () => {
   }
 
   // Add .md extension if not present
-  const finalName = trimmed.endsWith('.md') || trimmed.endsWith('.txt')
-    ? trimmed
-    : `${trimmed}.md`;
+  const finalName = trimmed.endsWith('.md') || trimmed.endsWith('.txt') ? trimmed : `${trimmed}.md`;
 
   emit('create', finalName);
   fileName.value = '';
@@ -62,7 +63,9 @@ const handleKeydown = (event) => {
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
           <!-- Header -->
           <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Create New Agent File</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              Create New Agent File
+            </h3>
           </div>
 
           <!-- Body -->
@@ -72,11 +75,11 @@ const handleKeydown = (event) => {
             </label>
             <input
               v-model="fileName"
-              @keydown="handleKeydown"
               type="text"
               placeholder="my-agent.md"
               class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               autofocus
+              @keydown="handleKeydown"
             />
             <p class="mt-2 text-xs text-gray-500 dark:text-gray-500">
               File extension (.md or .txt) will be added automatically if not provided
@@ -87,16 +90,18 @@ const handleKeydown = (event) => {
           </div>
 
           <!-- Footer -->
-          <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+          <div
+            class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3"
+          >
             <button
-              @click="handleClose"
               class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              @click="handleClose"
             >
               Cancel
             </button>
             <button
-              @click="handleCreate"
               class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+              @click="handleCreate"
             >
               Create
             </button>

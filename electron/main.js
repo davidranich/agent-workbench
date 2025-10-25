@@ -35,10 +35,10 @@ function createWindow() {
       // Enable web security
       webSecurity: true,
       // Disable eval
-      sandbox: true
+      sandbox: true,
     },
     show: false,
-    backgroundColor: '#1f2937'
+    backgroundColor: '#1f2937',
   });
 
   // Set Content Security Policy to allow data URIs for images
@@ -50,9 +50,9 @@ function createWindow() {
         'Content-Security-Policy': [
           isDev
             ? "default-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:* ws://localhost:*; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:*"
-            : "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self'"
-        ]
-      }
+            : "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self'",
+        ],
+      },
     });
   });
 
@@ -115,7 +115,7 @@ async function readDirectoryTree(dirPath, basePath = dirPath) {
         path: fullPath,
         relativePath: relativePath,
         isDirectory: file.isDirectory(),
-        isFile: file.isFile()
+        isFile: file.isFile(),
       };
 
       if (file.isDirectory()) {
@@ -129,8 +129,12 @@ async function readDirectoryTree(dirPath, basePath = dirPath) {
     // Sort: directories first, then files (both alphabetically)
     result.sort((a, b) => {
       // Directories come before files
-      if (a.isDirectory && !b.isDirectory) return -1;
-      if (!a.isDirectory && b.isDirectory) return 1;
+      if (a.isDirectory && !b.isDirectory) {
+        return -1;
+      }
+      if (!a.isDirectory && b.isDirectory) {
+        return 1;
+      }
       // Both are same type, sort alphabetically (case-insensitive)
       return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
     });
@@ -146,11 +150,11 @@ async function readDirectoryTree(dirPath, basePath = dirPath) {
 ipcMain.handle('read-directory', async (event, dirPath) => {
   try {
     const files = await fs.readdir(dirPath, { withFileTypes: true });
-    return files.map(file => ({
+    return files.map((file) => ({
       name: file.name,
       path: path.join(dirPath, file.name),
       isDirectory: file.isDirectory(),
-      isFile: file.isFile()
+      isFile: file.isFile(),
     }));
   } catch (error) {
     console.error('Error reading directory:', error);
@@ -206,7 +210,7 @@ ipcMain.handle('write-file', async (event, filePath, content) => {
 ipcMain.handle('select-directory', async () => {
   const { dialog } = require('electron');
   const result = await dialog.showOpenDialog(mainWindow, {
-    properties: ['openDirectory']
+    properties: ['openDirectory'],
   });
 
   if (result.canceled) {
@@ -317,7 +321,7 @@ ipcMain.handle('watch-directory', (event, dirPath) => {
         mainWindow.webContents.send('directory-changed', {
           eventType,
           filename,
-          dirPath
+          dirPath,
         });
       }
     });
@@ -348,54 +352,57 @@ ipcMain.handle('unwatch-directory', () => {
 // ============================================
 
 // Launch Claude Code in external terminal
-ipcMain.handle('launch-claude-code-external', async (event, filePath, cwd, terminalType = 'terminal', terminalSettings = {}) => {
-  try {
-    const platform = os.platform();
+ipcMain.handle(
+  'launch-claude-code-external',
+  async (event, filePath, cwd, terminalType = 'terminal', terminalSettings = {}) => {
+    try {
+      const platform = os.platform();
 
-    // Extract terminal settings with defaults
-    const windowMode = terminalSettings.windowMode || 'window';
-    const showSplit = terminalSettings.showSplit !== false; // Default true
-    const splitDirection = terminalSettings.splitDirection || 'vertical';
-    const windowWidth = terminalSettings.windowWidth || 1700;
-    const windowHeight = terminalSettings.windowHeight || 450;
+      // Extract terminal settings with defaults
+      const windowMode = terminalSettings.windowMode || 'window';
+      const showSplit = terminalSettings.showSplit !== false; // Default true
+      const splitDirection = terminalSettings.splitDirection || 'vertical';
+      const windowWidth = terminalSettings.windowWidth || 1700;
+      const windowHeight = terminalSettings.windowHeight || 450;
 
-    // Build the command - with or without file path
-    const claudeCmd = filePath ? `claude \\"${filePath}\\"` : 'claude';
+      // Build the command - with or without file path
+      const claudeCmd = filePath ? `claude \\"${filePath}\\"` : 'claude';
 
-    if (platform === 'darwin') {
-      // macOS - support different terminals
-      let script;
+      if (platform === 'darwin') {
+        // macOS - support different terminals
+        let script;
 
-      if (terminalType === 'iterm') {
-        // iTerm2 - with customizable settings
-        if (windowMode === 'tab') {
-          // Open in new tab
-          script = `tell application "iTerm"
+        if (terminalType === 'iterm') {
+          // iTerm2 - with customizable settings
+          if (windowMode === 'tab') {
+            // Open in new tab
+            script = `tell application "iTerm"
             activate
             tell current window
               create tab with default profile
               tell current session
                 write text "cd \\"${cwd}\\" && ${claudeCmd}"`;
 
-          if (showSplit) {
-            const splitCmd = splitDirection === 'vertical' ? 'split vertically' : 'split horizontally';
-            script += `
+            if (showSplit) {
+              const splitCmd =
+                splitDirection === 'vertical' ? 'split vertically' : 'split horizontally';
+              script += `
                 -- Split and open a regular terminal in the directory
                 tell (${splitCmd} with default profile)
                   write text "cd \\"${cwd}\\" && ls -la"
                 end tell`;
-          }
+            }
 
-          script += `
+            script += `
               end tell
             end tell
           end tell`;
-        } else {
-          // Open in new window with custom size
-          const right = 100 + windowWidth;
-          const bottom = 100 + windowHeight;
+          } else {
+            // Open in new window with custom size
+            const right = 100 + windowWidth;
+            const bottom = 100 + windowHeight;
 
-          script = `tell application "iTerm"
+            script = `tell application "iTerm"
             activate
             create window with default profile
             tell current window
@@ -404,59 +411,61 @@ ipcMain.handle('launch-claude-code-external', async (event, filePath, cwd, termi
               tell current session
                 write text "cd \\"${cwd}\\" && ${claudeCmd}"`;
 
-          if (showSplit) {
-            const splitCmd = splitDirection === 'vertical' ? 'split vertically' : 'split horizontally';
-            script += `
+            if (showSplit) {
+              const splitCmd =
+                splitDirection === 'vertical' ? 'split vertically' : 'split horizontally';
+              script += `
                 -- Split and open a regular terminal in the directory
                 tell (${splitCmd} with default profile)
                   write text "cd \\"${cwd}\\" && ls -la"
                 end tell`;
-          }
+            }
 
-          script += `
+            script += `
               end tell
             end tell
           end tell`;
-        }
-      } else {
-        // Terminal.app (default)
-        script = `tell application "Terminal"
+          }
+        } else {
+          // Terminal.app (default)
+          script = `tell application "Terminal"
           activate
           do script "cd \\"${cwd}\\" && ${claudeCmd}"
         end tell`;
-      }
-
-      spawn('osascript', ['-e', script]);
-      return { success: true };
-    } else if (platform === 'win32') {
-      // Windows - use cmd
-      const winClaudeCmd = filePath ? `claude "${filePath}"` : 'claude';
-      spawn('cmd.exe', ['/c', 'start', 'cmd.exe', '/k', `cd /d "${cwd}" && ${winClaudeCmd}`]);
-      return { success: true };
-    } else {
-      // Linux - try common terminal emulators
-      const terminals = ['gnome-terminal', 'konsole', 'xterm'];
-      const linuxClaudeCmd = filePath ? `claude "${filePath}"` : 'claude';
-
-      for (const term of terminals) {
-        try {
-          if (term === 'gnome-terminal') {
-            spawn(term, ['--', 'bash', '-c', `cd "${cwd}" && ${linuxClaudeCmd}; exec bash`]);
-          } else if (term === 'konsole') {
-            spawn(term, ['-e', 'bash', '-c', `cd "${cwd}" && ${linuxClaudeCmd}; exec bash`]);
-          } else {
-            spawn(term, ['-e', 'bash', '-c', `cd "${cwd}" && ${linuxClaudeCmd}; exec bash`]);
-          }
-          return { success: true };
-        } catch (err) {
-          continue;
         }
-      }
 
-      throw new Error('No suitable terminal emulator found');
+        spawn('osascript', ['-e', script]);
+        return { success: true };
+      } else if (platform === 'win32') {
+        // Windows - use cmd
+        const winClaudeCmd = filePath ? `claude "${filePath}"` : 'claude';
+        spawn('cmd.exe', ['/c', 'start', 'cmd.exe', '/k', `cd /d "${cwd}" && ${winClaudeCmd}`]);
+        return { success: true };
+      } else {
+        // Linux - try common terminal emulators
+        const terminals = ['gnome-terminal', 'konsole', 'xterm'];
+        const linuxClaudeCmd = filePath ? `claude "${filePath}"` : 'claude';
+
+        for (const term of terminals) {
+          try {
+            if (term === 'gnome-terminal') {
+              spawn(term, ['--', 'bash', '-c', `cd "${cwd}" && ${linuxClaudeCmd}; exec bash`]);
+            } else if (term === 'konsole') {
+              spawn(term, ['-e', 'bash', '-c', `cd "${cwd}" && ${linuxClaudeCmd}; exec bash`]);
+            } else {
+              spawn(term, ['-e', 'bash', '-c', `cd "${cwd}" && ${linuxClaudeCmd}; exec bash`]);
+            }
+            return { success: true };
+          } catch (err) {
+            continue;
+          }
+        }
+
+        throw new Error('No suitable terminal emulator found');
+      }
+    } catch (error) {
+      console.error('Error launching Claude Code:', error);
+      return { success: false, error: error.message };
     }
-  } catch (error) {
-    console.error('Error launching Claude Code:', error);
-    return { success: false, error: error.message };
   }
-});
+);

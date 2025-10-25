@@ -58,6 +58,6 @@ export function useTheme() {
     currentTheme,
     initTheme,
     toggleTheme,
-    setTheme
+    setTheme,
   };
 }

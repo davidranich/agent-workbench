@@ -44,7 +44,7 @@ import {
   faExpand,
   faExclamationTriangle,
   faPalette,
-  faCopy
+  faCopy,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Add icons to library
@@ -91,7 +91,7 @@ library.add(
 const app = createApp(App);
 
 // Register FontAwesome component globally
-app.component('font-awesome-icon', FontAwesomeIcon);
+app.component('FontAwesomeIcon', FontAwesomeIcon);
 
 app.use(createPinia());
 app.use(router);

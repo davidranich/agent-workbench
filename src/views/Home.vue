@@ -13,8 +13,15 @@ import ImageViewer from '@/components/ImageViewer.vue';
 const agentStore = useAgentStore();
 const { selectDirectory, getAppPath, readDirectory } = useElectronAPI();
 const { saveLastDirectory, getLastDirectory, clearLastDirectory } = useLocalStorage();
-const { preferredTerminal, setPreferredTerminal, TERMINALS, TERMINAL_LABELS } = useTerminalSettings();
-const { terminalWindowMode, terminalSplitDirection, terminalShowSplit, terminalWindowWidth, terminalWindowHeight } = useSettings();
+const { preferredTerminal, setPreferredTerminal, TERMINALS, TERMINAL_LABELS } =
+  useTerminalSettings();
+const {
+  terminalWindowMode,
+  terminalSplitDirection,
+  terminalShowSplit,
+  terminalWindowWidth,
+  terminalWindowHeight,
+} = useSettings();
 
 const appReady = ref(false);
 const showSettings = ref(false);
@@ -74,7 +81,7 @@ const handleLaunchClaudeCode = async () => {
       splitDirection: terminalSplitDirection.value,
       showSplit: terminalShowSplit.value,
       windowWidth: terminalWindowWidth.value,
-      windowHeight: terminalWindowHeight.value
+      windowHeight: terminalWindowHeight.value,
     };
 
     const result = await window.electronAPI.launchClaudeCodeExternal(
@@ -98,7 +105,9 @@ const handleLaunchClaudeCode = async () => {
 <template>
   <div class="flex h-full w-full">
     <!-- Sidebar -->
-    <aside class="w-72 bg-gray-100 dark:bg-gray-800 border-r border-gray-300 dark:border-gray-700 flex flex-col">
+    <aside
+      class="w-72 bg-gray-100 dark:bg-gray-800 border-r border-gray-300 dark:border-gray-700 flex flex-col"
+    >
       <div class="p-4 border-b border-gray-300 dark:border-gray-700">
         <div class="flex flex-col items-center gap-2">
           <img
@@ -109,14 +118,11 @@ const handleLaunchClaudeCode = async () => {
           <div class="flex items-center gap-2">
             <p class="text-sm text-gray-600 dark:text-gray-400">Agent Workbench</p>
             <button
-              @click="showSettings = true"
               class="p-1.5 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
               title="Settings"
+              @click="showSettings = true"
             >
-              <font-awesome-icon
-                icon="cog"
-                class="text-gray-700 dark:text-gray-300 text-sm"
-              />
+              <font-awesome-icon icon="cog" class="text-gray-700 dark:text-gray-300 text-sm" />
             </button>
           </div>
         </div>
@@ -124,17 +130,17 @@ const handleLaunchClaudeCode = async () => {
 
       <div class="p-4 border-b border-gray-300 dark:border-gray-700 space-y-2">
         <button
-          @click="handleSelectDirectory"
           class="btn-primary w-full px-4 py-2 text-white rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-2"
+          @click="handleSelectDirectory"
         >
           <font-awesome-icon icon="folder" />
           Select Directory
         </button>
         <button
           v-if="agentStore.currentDirectory"
-          @click="handleLaunchClaudeCode"
           class="btn-secondary w-full px-4 py-2 text-white rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-2"
           title="Launch Claude Code in terminal"
+          @click="handleLaunchClaudeCode"
         >
           <font-awesome-icon icon="terminal" />
           Launch Claude Code
@@ -144,22 +150,22 @@ const handleLaunchClaudeCode = async () => {
           <select
             v-model="preferredTerminal"
             class="terminal-select w-full px-3 py-2 pr-8 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:outline-none transition-colors appearance-none bg-no-repeat"
-            style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27currentColor%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-position: right 0.5rem center; background-size: 1.25rem;"
+            style="
+              background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27currentColor%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e');
+              background-position: right 0.5rem center;
+              background-size: 1.25rem;
+            "
           >
-            <option
-              v-for="(label, key) in TERMINAL_LABELS"
-              :key="key"
-              :value="key"
-            >
+            <option v-for="(label, key) in TERMINAL_LABELS" :key="key" :value="key">
               {{ label }}
             </option>
           </select>
         </div>
         <button
           v-if="agentStore.currentDirectory"
-          @click="handleClearSavedDirectory"
           class="w-full px-3 py-1.5 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs rounded transition-colors"
           title="Clear saved directory"
+          @click="handleClearSavedDirectory"
         >
           Clear Directory
         </button>
@@ -181,8 +187,8 @@ const handleLaunchClaudeCode = async () => {
     <!-- Image Viewer -->
     <ImageViewer
       v-if="agentStore.selectedImage"
-      :imagePath="agentStore.selectedImage.path"
-      :imageName="agentStore.selectedImage.name"
+      :image-path="agentStore.selectedImage.path"
+      :image-name="agentStore.selectedImage.name"
       @close="agentStore.clearImageSelection()"
     />
   </div>

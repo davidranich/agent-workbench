@@ -14,12 +14,14 @@ Thank you for your interest in contributing to Agent Workbench! We welcome contr
 
 1. Fork the repository on GitHub
 2. Clone your fork locally:
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/agent-workbench.git
    cd agent-workbench
    ```
 
 3. Install dependencies:
+
    ```bash
    npm install
    ```
@@ -34,6 +36,7 @@ Thank you for your interest in contributing to Agent Workbench! We welcome contr
 ### Reporting Bugs
 
 If you find a bug, please create an issue on GitHub with:
+
 - A clear, descriptive title
 - Steps to reproduce the issue
 - Expected behavior vs actual behavior
@@ -43,6 +46,7 @@ If you find a bug, please create an issue on GitHub with:
 ### Suggesting Enhancements
 
 We welcome feature requests! Please create an issue with:
+
 - A clear description of the feature
 - The problem it solves
 - Any implementation ideas you have
@@ -50,6 +54,7 @@ We welcome feature requests! Please create an issue with:
 ### Pull Requests
 
 1. **Create a branch** for your changes:
+
    ```bash
    git checkout -b feature/your-feature-name
    # or
@@ -61,6 +66,7 @@ We welcome feature requests! Please create an issue with:
 3. **Test your changes** thoroughly
 
 4. **Commit your changes** with clear, descriptive commit messages:
+
    ```bash
    git commit -m "Add feature: description of feature"
    # or
@@ -68,6 +74,7 @@ We welcome feature requests! Please create an issue with:
    ```
 
 5. **Push to your fork**:
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -124,6 +131,7 @@ Use clear, descriptive commit messages:
 ## Testing
 
 Currently, the project doesn't have automated tests. When adding new features:
+
 - Manually test your changes thoroughly
 - Test on different operating systems if possible (macOS, Windows, Linux)
 - Verify existing functionality still works
@@ -131,6 +139,7 @@ Currently, the project doesn't have automated tests. When adding new features:
 ## Questions?
 
 If you have questions about contributing, feel free to:
+
 - Open an issue with the "question" label
 - Reach out via GitHub Discussions (if enabled)
 

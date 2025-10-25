@@ -13,13 +13,13 @@ export const useAgentStore = defineStore('agent', () => {
 
   // Getters
   const markdownFiles = computed(() => {
-    return files.value.filter(file =>
-      file.isFile && (file.name.endsWith('.md') || file.name.endsWith('.txt'))
+    return files.value.filter(
+      (file) => file.isFile && (file.name.endsWith('.md') || file.name.endsWith('.txt'))
     );
   });
 
   const directories = computed(() => {
-    return files.value.filter(file => file.isDirectory);
+    return files.value.filter((file) => file.isDirectory);
   });
 
   const currentFileName = computed(() => {
@@ -106,6 +106,6 @@ export const useAgentStore = defineStore('agent', () => {
     clearSelection,
     markAsSaved,
     selectImage,
-    clearImageSelection
+    clearImageSelection,
   };
 });
