@@ -28,7 +28,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getAppPath: () => ipcRenderer.invoke('get-app-path'),
 
   // Claude Code integration
-  launchClaudeCodeExternal: (filePath, cwd, terminalType) => ipcRenderer.invoke('launch-claude-code-external', filePath, cwd, terminalType),
+  launchClaudeCodeExternal: (filePath, cwd, terminalType, terminalSettings) => ipcRenderer.invoke('launch-claude-code-external', filePath, cwd, terminalType, terminalSettings),
 
   // File watching
   watchDirectory: (dirPath) => ipcRenderer.invoke('watch-directory', dirPath),

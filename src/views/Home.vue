@@ -4,6 +4,7 @@ import { useAgentStore } from '@/stores/agentStore';
 import { useElectronAPI } from '@/composables/useElectronAPI';
 import { useLocalStorage } from '@/composables/useLocalStorage';
 import { useTerminalSettings } from '@/composables/useTerminalSettings';
+import { useSettings } from '@/composables/useSettings';
 import FileBrowser from '@/components/FileBrowser.vue';
 import MarkdownEditor from '@/components/MarkdownEditor.vue';
 import SettingsModal from '@/components/SettingsModal.vue';
@@ -13,6 +14,7 @@ const agentStore = useAgentStore();
 const { selectDirectory, getAppPath, readDirectory } = useElectronAPI();
 const { saveLastDirectory, getLastDirectory, clearLastDirectory } = useLocalStorage();
 const { preferredTerminal, setPreferredTerminal, TERMINALS, TERMINAL_LABELS } = useTerminalSettings();
+const { terminalWindowMode, terminalSplitDirection, terminalShowSplit, terminalWindowWidth, terminalWindowHeight } = useSettings();
 
 const appReady = ref(false);
 const showSettings = ref(false);
@@ -66,7 +68,22 @@ const handleClearSavedDirectory = () => {
 
 const handleLaunchClaudeCode = async () => {
   try {
-    const result = await window.electronAPI.launchClaudeCodeExternal(null, agentStore.currentDirectory, preferredTerminal.value);
+    // Prepare terminal settings
+    const terminalSettings = {
+      windowMode: terminalWindowMode.value,
+      splitDirection: terminalSplitDirection.value,
+      showSplit: terminalShowSplit.value,
+      windowWidth: terminalWindowWidth.value,
+      windowHeight: terminalWindowHeight.value
+    };
+
+    const result = await window.electronAPI.launchClaudeCodeExternal(
+      null,
+      agentStore.currentDirectory,
+      preferredTerminal.value,
+      terminalSettings
+    );
+
     if (result.success) {
       console.log('Claude Code launched in external terminal');
     } else {

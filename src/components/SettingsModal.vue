@@ -17,6 +17,20 @@ const {
   COLOR_SCHEMES,
   COLOR_SCHEME_LABELS,
   COLOR_SCHEME_LABELS_LIGHT,
+  terminalWindowMode,
+  terminalSplitDirection,
+  terminalShowSplit,
+  terminalWindowWidth,
+  terminalWindowHeight,
+  setTerminalWindowMode,
+  setTerminalSplitDirection,
+  setTerminalShowSplit,
+  setTerminalWindowWidth,
+  setTerminalWindowHeight,
+  TERMINAL_WINDOW_MODES,
+  TERMINAL_WINDOW_MODE_LABELS,
+  TERMINAL_SPLIT_DIRECTIONS,
+  TERMINAL_SPLIT_DIRECTION_LABELS,
 } = useSettings();
 
 const { currentTheme, setTheme } = useTheme();
@@ -26,6 +40,7 @@ const activeTab = ref('appearance');
 const tabs = [
   { id: 'appearance', label: 'Appearance', icon: 'sun' },
   { id: 'accessibility', label: 'Accessibility', icon: 'book-open' },
+  { id: 'terminal', label: 'Terminal', icon: 'terminal' },
 ];
 
 const handleClose = () => {
@@ -177,6 +192,143 @@ const handleClose = () => {
                   <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
                     This is how text will appear with your current font size setting.
                   </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Terminal Tab -->
+            <div v-if="activeTab === 'terminal'" class="space-y-6">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Terminal (iTerm2 only)</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                  Configure how Claude Code launches in iTerm2. These settings only apply when iTerm2 is selected as your terminal.
+                </p>
+
+                <!-- Window Mode -->
+                <div class="space-y-3">
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Window Mode</label>
+                  <div class="grid grid-cols-2 gap-3">
+                    <button
+                      v-for="(label, key) in TERMINAL_WINDOW_MODE_LABELS"
+                      :key="key"
+                      @click="setTerminalWindowMode(key)"
+                      class="px-4 py-3 rounded-lg border-2 transition-all text-sm"
+                      :class="terminalWindowMode === key
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                    >
+                      {{ label }}
+                    </button>
+                  </div>
+                  <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                    Choose whether to open Claude Code in a new tab or a new window.
+                  </p>
+                </div>
+
+                <!-- Show Split Pane -->
+                <div class="space-y-3 mt-6">
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Split Pane</label>
+                  <div class="flex items-center gap-3">
+                    <button
+                      @click="setTerminalShowSplit(true)"
+                      class="flex-1 px-4 py-3 rounded-lg border-2 transition-all text-sm"
+                      :class="terminalShowSplit
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                    >
+                      Show Split
+                    </button>
+                    <button
+                      @click="setTerminalShowSplit(false)"
+                      class="flex-1 px-4 py-3 rounded-lg border-2 transition-all text-sm"
+                      :class="!terminalShowSplit
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                    >
+                      No Split
+                    </button>
+                  </div>
+                  <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                    Enable to automatically create a split pane with a regular terminal in the same directory.
+                  </p>
+                </div>
+
+                <!-- Split Direction (only shown when split is enabled) -->
+                <div v-if="terminalShowSplit" class="space-y-3 mt-6">
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Split Direction</label>
+                  <div class="grid grid-cols-1 gap-3">
+                    <button
+                      v-for="(label, key) in TERMINAL_SPLIT_DIRECTION_LABELS"
+                      :key="key"
+                      @click="setTerminalSplitDirection(key)"
+                      class="px-4 py-3 rounded-lg border-2 transition-all text-sm text-left"
+                      :class="terminalSplitDirection === key
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-medium'
+                        : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'"
+                    >
+                      {{ label }}
+                    </button>
+                  </div>
+                  <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                    Choose how to split the terminal panes.
+                  </p>
+                </div>
+
+                <!-- Window Size (only for window mode) -->
+                <div v-if="terminalWindowMode === 'window'" class="space-y-3 mt-6">
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Window Size</label>
+                  <div class="grid grid-cols-2 gap-4">
+                    <!-- Width -->
+                    <div class="space-y-2">
+                      <label class="text-xs text-gray-600 dark:text-gray-400">Width (px)</label>
+                      <input
+                        type="number"
+                        v-model.number="terminalWindowWidth"
+                        @blur="setTerminalWindowWidth(terminalWindowWidth)"
+                        min="800"
+                        max="3000"
+                        step="50"
+                        class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                      />
+                    </div>
+                    <!-- Height -->
+                    <div class="space-y-2">
+                      <label class="text-xs text-gray-600 dark:text-gray-400">Height (px)</label>
+                      <input
+                        type="number"
+                        v-model.number="terminalWindowHeight"
+                        @blur="setTerminalWindowHeight(terminalWindowHeight)"
+                        min="300"
+                        max="1500"
+                        step="50"
+                        class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                      />
+                    </div>
+                  </div>
+                  <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                    Set custom window dimensions. Width: 800-3000px, Height: 300-1500px.
+                  </p>
+                </div>
+
+                <!-- Preview Info Box -->
+                <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <div class="flex items-start gap-3">
+                    <font-awesome-icon icon="info-circle" class="text-blue-600 dark:text-blue-400 mt-0.5" />
+                    <div class="flex-1">
+                      <p class="text-sm text-blue-900 dark:text-blue-300 font-medium mb-1">Preview</p>
+                      <p class="text-xs text-blue-800 dark:text-blue-400">
+                        <span v-if="terminalWindowMode === 'window'">Will open a new iTerm window</span>
+                        <span v-else>Will open a new tab in the current iTerm window</span>
+                        <span v-if="terminalShowSplit">
+                          with Claude Code on the <span v-if="terminalSplitDirection === 'vertical'">left</span><span v-else>top</span>
+                          and a regular terminal on the <span v-if="terminalSplitDirection === 'vertical'">right</span><span v-else>bottom</span>.
+                        </span>
+                        <span v-else>
+                          with Claude Code only.
+                        </span>
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

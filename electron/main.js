@@ -348,9 +348,16 @@ ipcMain.handle('unwatch-directory', () => {
 // ============================================
 
 // Launch Claude Code in external terminal
-ipcMain.handle('launch-claude-code-external', async (event, filePath, cwd, terminalType = 'terminal') => {
+ipcMain.handle('launch-claude-code-external', async (event, filePath, cwd, terminalType = 'terminal', terminalSettings = {}) => {
   try {
     const platform = os.platform();
+
+    // Extract terminal settings with defaults
+    const windowMode = terminalSettings.windowMode || 'window';
+    const showSplit = terminalSettings.showSplit !== false; // Default true
+    const splitDirection = terminalSettings.splitDirection || 'vertical';
+    const windowWidth = terminalSettings.windowWidth || 1700;
+    const windowHeight = terminalSettings.windowHeight || 450;
 
     // Build the command - with or without file path
     const claudeCmd = filePath ? `claude \\"${filePath}\\"` : 'claude';
@@ -360,16 +367,57 @@ ipcMain.handle('launch-claude-code-external', async (event, filePath, cwd, termi
       let script;
 
       if (terminalType === 'iterm') {
-        // iTerm2
-        script = `tell application "iTerm"
-          activate
-          tell current window
-            create tab with default profile
-            tell current session
-              write text "cd \\"${cwd}\\" && ${claudeCmd}"
+        // iTerm2 - with customizable settings
+        if (windowMode === 'tab') {
+          // Open in new tab
+          script = `tell application "iTerm"
+            activate
+            tell current window
+              create tab with default profile
+              tell current session
+                write text "cd \\"${cwd}\\" && ${claudeCmd}"`;
+
+          if (showSplit) {
+            const splitCmd = splitDirection === 'vertical' ? 'split vertically' : 'split horizontally';
+            script += `
+                -- Split and open a regular terminal in the directory
+                tell (${splitCmd} with default profile)
+                  write text "cd \\"${cwd}\\" && ls -la"
+                end tell`;
+          }
+
+          script += `
+              end tell
             end tell
-          end tell
-        end tell`;
+          end tell`;
+        } else {
+          // Open in new window with custom size
+          const right = 100 + windowWidth;
+          const bottom = 100 + windowHeight;
+
+          script = `tell application "iTerm"
+            activate
+            create window with default profile
+            tell current window
+              -- Set window size based on user preferences
+              set bounds to {100, 100, ${right}, ${bottom}}
+              tell current session
+                write text "cd \\"${cwd}\\" && ${claudeCmd}"`;
+
+          if (showSplit) {
+            const splitCmd = splitDirection === 'vertical' ? 'split vertically' : 'split horizontally';
+            script += `
+                -- Split and open a regular terminal in the directory
+                tell (${splitCmd} with default profile)
+                  write text "cd \\"${cwd}\\" && ls -la"
+                end tell`;
+          }
+
+          script += `
+              end tell
+            end tell
+          end tell`;
+        }
       } else {
         // Terminal.app (default)
         script = `tell application "Terminal"

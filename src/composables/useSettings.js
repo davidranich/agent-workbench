@@ -4,6 +4,11 @@ const STORAGE_KEYS = {
   FONT_SIZE: 'agentWorkbench_fontSize',
   COLOR_SCHEME_LIGHT: 'agentWorkbench_colorSchemeLight',
   COLOR_SCHEME_DARK: 'agentWorkbench_colorSchemeDark',
+  TERMINAL_WINDOW_MODE: 'agentWorkbench_terminalWindowMode',
+  TERMINAL_SPLIT_DIRECTION: 'agentWorkbench_terminalSplitDirection',
+  TERMINAL_SHOW_SPLIT: 'agentWorkbench_terminalShowSplit',
+  TERMINAL_WINDOW_WIDTH: 'agentWorkbench_terminalWindowWidth',
+  TERMINAL_WINDOW_HEIGHT: 'agentWorkbench_terminalWindowHeight',
 };
 
 // Font size options
@@ -36,6 +41,27 @@ export const COLOR_SCHEMES = {
   CYBERPUNK: 'cyberpunk',
   EVA: 'eva',
   GRUVBOX: 'gruvbox',
+};
+
+// Terminal settings
+export const TERMINAL_WINDOW_MODES = {
+  TAB: 'tab',
+  WINDOW: 'window',
+};
+
+export const TERMINAL_WINDOW_MODE_LABELS = {
+  [TERMINAL_WINDOW_MODES.TAB]: 'New Tab',
+  [TERMINAL_WINDOW_MODES.WINDOW]: 'New Window',
+};
+
+export const TERMINAL_SPLIT_DIRECTIONS = {
+  VERTICAL: 'vertical',
+  HORIZONTAL: 'horizontal',
+};
+
+export const TERMINAL_SPLIT_DIRECTION_LABELS = {
+  [TERMINAL_SPLIT_DIRECTIONS.VERTICAL]: 'Vertical (Side by Side)',
+  [TERMINAL_SPLIT_DIRECTIONS.HORIZONTAL]: 'Horizontal (Top & Bottom)',
 };
 
 export const COLOR_SCHEME_LABELS = {
@@ -215,6 +241,13 @@ const fontSize = ref(localStorage.getItem(STORAGE_KEYS.FONT_SIZE) || FONT_SIZES.
 const colorSchemeLight = ref(localStorage.getItem(STORAGE_KEYS.COLOR_SCHEME_LIGHT) || COLOR_SCHEMES.DEFAULT);
 const colorSchemeDark = ref(localStorage.getItem(STORAGE_KEYS.COLOR_SCHEME_DARK) || COLOR_SCHEMES.DEFAULT);
 
+// Terminal settings
+const terminalWindowMode = ref(localStorage.getItem(STORAGE_KEYS.TERMINAL_WINDOW_MODE) || TERMINAL_WINDOW_MODES.WINDOW);
+const terminalSplitDirection = ref(localStorage.getItem(STORAGE_KEYS.TERMINAL_SPLIT_DIRECTION) || TERMINAL_SPLIT_DIRECTIONS.VERTICAL);
+const terminalShowSplit = ref(localStorage.getItem(STORAGE_KEYS.TERMINAL_SHOW_SPLIT) !== 'false'); // Default true
+const terminalWindowWidth = ref(parseInt(localStorage.getItem(STORAGE_KEYS.TERMINAL_WINDOW_WIDTH)) || 1700);
+const terminalWindowHeight = ref(parseInt(localStorage.getItem(STORAGE_KEYS.TERMINAL_WINDOW_HEIGHT)) || 450);
+
 // Watch for changes and save to localStorage
 watch(fontSize, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.FONT_SIZE, newValue);
@@ -229,6 +262,26 @@ watch(colorSchemeLight, (newValue) => {
 watch(colorSchemeDark, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.COLOR_SCHEME_DARK, newValue);
   applyColorScheme();
+});
+
+watch(terminalWindowMode, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.TERMINAL_WINDOW_MODE, newValue);
+});
+
+watch(terminalSplitDirection, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.TERMINAL_SPLIT_DIRECTION, newValue);
+});
+
+watch(terminalShowSplit, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.TERMINAL_SHOW_SPLIT, String(newValue));
+});
+
+watch(terminalWindowWidth, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.TERMINAL_WINDOW_WIDTH, String(newValue));
+});
+
+watch(terminalWindowHeight, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.TERMINAL_WINDOW_HEIGHT, String(newValue));
 });
 
 // Apply font size to document
@@ -297,6 +350,34 @@ export function useSettings() {
     }
   };
 
+  const setTerminalWindowMode = (mode) => {
+    if (Object.values(TERMINAL_WINDOW_MODES).includes(mode)) {
+      terminalWindowMode.value = mode;
+    }
+  };
+
+  const setTerminalSplitDirection = (direction) => {
+    if (Object.values(TERMINAL_SPLIT_DIRECTIONS).includes(direction)) {
+      terminalSplitDirection.value = direction;
+    }
+  };
+
+  const setTerminalShowSplit = (show) => {
+    terminalShowSplit.value = show;
+  };
+
+  const setTerminalWindowWidth = (width) => {
+    // Ensure width is between 800 and 3000 pixels
+    const validWidth = Math.max(800, Math.min(3000, parseInt(width) || 1700));
+    terminalWindowWidth.value = validWidth;
+  };
+
+  const setTerminalWindowHeight = (height) => {
+    // Ensure height is between 300 and 1500 pixels
+    const validHeight = Math.max(300, Math.min(1500, parseInt(height) || 450));
+    terminalWindowHeight.value = validHeight;
+  };
+
   const initializeSettings = () => {
     applyFontSize(fontSize.value);
     applyColorScheme();
@@ -321,6 +402,22 @@ export function useSettings() {
     COLOR_SCHEMES,
     COLOR_SCHEME_LABELS,
     COLOR_SCHEME_LABELS_LIGHT,
+
+    // Terminal settings
+    terminalWindowMode,
+    terminalSplitDirection,
+    terminalShowSplit,
+    terminalWindowWidth,
+    terminalWindowHeight,
+    setTerminalWindowMode,
+    setTerminalSplitDirection,
+    setTerminalShowSplit,
+    setTerminalWindowWidth,
+    setTerminalWindowHeight,
+    TERMINAL_WINDOW_MODES,
+    TERMINAL_WINDOW_MODE_LABELS,
+    TERMINAL_SPLIT_DIRECTIONS,
+    TERMINAL_SPLIT_DIRECTION_LABELS,
 
     // Initialize
     initializeSettings,
