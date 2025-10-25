@@ -10,6 +10,17 @@ A desktop application for managing and editing AI agent configurations with an i
 
 Agent Workbench is an Electron-based desktop application that provides a comprehensive workspace for creating, editing, and managing your AI agent instruction files. With a dual-pane editor featuring both markdown and rich text editing modes, live preview, and direct Claude Code terminal launcher, it streamlines your agent development workflow.
 
+## Platform Support
+
+**Important Disclaimer:** The main contributor (David Ranich) develops and tests this application exclusively on macOS. As a result, all testing and validation has been performed on macOS only.
+
+**Current Release Policy:**
+- ✅ **macOS**: Fully tested and supported
+- ✅ **Linux**: Expected to work, but not actively tested
+- ⚠️ **Windows**: Not tested - in good conscience, official releases will be for macOS/Linux only
+
+With time and additional resources, we hope to expand proper testing and support to Windows. Contributions from Windows users are especially welcome to help improve cross-platform compatibility.
+
 ## Features
 
 ### 📁 Directory Management
@@ -72,7 +83,7 @@ Agent Workbench is an Electron-based desktop application that provides a compreh
 - **Keyboard Shortcuts**: Efficient keyboard-driven workflow
 - **Responsive Design**: Smooth animations and transitions
 - **Error Handling**: Graceful degradation and user feedback
-- **Cross-platform**: Works on macOS (Windows and Linux support planned)
+- **Platform Support**: Tested on macOS, expected to work on Linux (see Platform Support section)
 
 ## Tech Stack
 
