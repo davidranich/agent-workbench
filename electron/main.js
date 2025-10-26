@@ -1,8 +1,17 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
-const path = require('path');
-const fs = require('fs').promises;
-const { spawn } = require('child_process');
-const os = require('os');
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import fsModule from 'fs';
+import { spawn } from 'child_process';
+import os from 'os';
+
+// ES module __dirname polyfill
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// File system APIs
+const fs = fsModule.promises;
 
 // Keep a global reference of the window object
 let mainWindow;
@@ -208,7 +217,6 @@ ipcMain.handle('write-file', async (event, filePath, content) => {
 
 // Select directory dialog
 ipcMain.handle('select-directory', async () => {
-  const { dialog } = require('electron');
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ['openDirectory'],
   });
@@ -314,8 +322,7 @@ ipcMain.handle('watch-directory', (event, dirPath) => {
     }
 
     // Use fs.watch for native file system watching
-    const fsSync = require('fs');
-    directoryWatcher = fsSync.watch(dirPath, { recursive: true }, (eventType, filename) => {
+    directoryWatcher = fsModule.watch(dirPath, { recursive: true }, (eventType, filename) => {
       // Notify renderer process of changes
       if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.webContents.send('directory-changed', {

@@ -19,16 +19,29 @@ export default defineConfig({
           build: {
             outDir: 'dist-electron',
             sourcemap: true,
+            rollupOptions: {
+              external: ['electron'],
+              output: {
+                format: 'cjs',
+              },
+            },
           },
         },
       },
       {
-        // Preload script
+        // Preload script (kept as CommonJS for Electron compatibility)
         entry: 'electron/preload.js',
+        onstart(options) {
+          // Reload preload when it changes
+          options.reload();
+        },
         vite: {
           build: {
             outDir: 'dist-electron',
             sourcemap: true,
+            rollupOptions: {
+              external: ['electron'],
+            },
           },
         },
       },
