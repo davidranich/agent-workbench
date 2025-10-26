@@ -108,12 +108,12 @@ const handleLaunchClaudeCode = async () => {
     <aside
       class="w-72 bg-gray-100 dark:bg-gray-800 border-r border-gray-300 dark:border-gray-700 flex flex-col"
     >
-      <div class="p-4 border-b border-gray-300 dark:border-gray-700">
-        <div class="flex flex-col items-center gap-2">
+      <div class="p-2 border-b border-gray-300 dark:border-gray-700">
+        <div class="flex flex-col items-center gap-1">
           <img
             src="/images/agent-workbench-logo.png"
             alt="Agent Workbench Logo"
-            class="wx-40 h-41 object-contain"
+            class="object-contain"
           />
           <div class="flex items-center gap-2">
             <p class="text-sm text-gray-600 dark:text-gray-400">Agent Workbench</p>

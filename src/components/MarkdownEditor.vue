@@ -1070,41 +1070,54 @@ const openReplace = () => {
 
 /* Inline code */
 .prose code {
-  background-color: #f6f8fa;
+  background-color: var(--color-code-inline-bg, #f6f8fa);
   padding: 0.2em 0.5em;
   border-radius: 0.25em;
   font-size: 0.875em;
-  color: #dc2626;
-  border: 1px solid #d0d7de;
+  color: var(--color-code-inline-text, #dc2626);
+  border: 1px solid var(--color-border, #d0d7de);
   font-weight: 600;
   font-family: 'Courier New', Courier, monospace;
 }
 
 .dark .prose code {
-  background-color: #1f2937;
-  color: #fbbf24;
-  border-color: #374151;
+  background-color: var(--color-code-inline-bg, #1f2937);
+  color: var(--color-code-inline-text, #fbbf24);
+  border-color: var(--color-border, #374151);
 }
 
 /* Code blocks */
 .prose pre {
-  background-color: #f6f8fa;
+  background-color: var(--color-code-block-bg, #f6f8fa) !important;
   padding: 1em;
   border-radius: 0.5em;
   overflow-x: auto;
   margin: 1em 0;
-  border: 1px solid #d0d7de;
+  border: 1px solid var(--color-border, #d0d7de);
 }
 
 .dark .prose pre {
-  background-color: #1f2937;
-  border-color: #374151;
+  background-color: var(--color-code-block-bg, #1f2937) !important;
+  border-color: var(--color-border, #374151);
+}
+
+/* Ensure hljs code blocks also respect the custom background */
+.prose pre.hljs,
+.prose pre code.hljs {
+  background-color: transparent !important;
+}
+
+/* Override all syntax highlighting backgrounds */
+.prose pre *,
+.prose pre code *,
+.prose .hljs * {
+  background-color: transparent !important;
 }
 
 .prose pre code {
   background-color: transparent;
   padding: 0;
-  color: #24292f;
+  color: var(--color-code-block-text, #24292f);
   border: none;
   font-weight: 400;
   font-size: 0.9em;
@@ -1112,7 +1125,7 @@ const openReplace = () => {
 }
 
 .dark .prose pre code {
-  color: #e5e7eb;
+  color: var(--color-code-block-text, #e5e7eb);
 }
 
 /* Syntax highlighting colors - Light mode */

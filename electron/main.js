@@ -22,7 +22,14 @@ const terminals = {};
 // File system watcher
 let directoryWatcher = null;
 
-const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
+const isDev = !app.isPackaged;
+
+// Debug: Log dev mode status
+console.log('=== Development Mode Check ===');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('app.isPackaged:', app.isPackaged);
+console.log('isDev:', isDev);
+console.log('==============================');
 
 function createWindow() {
   // Create the browser window with security best practices
@@ -31,6 +38,7 @@ function createWindow() {
     height: 900,
     minWidth: 1000,
     minHeight: 600,
+    title: isDev ? '[DEV] Agent Workbench' : 'Agent Workbench',
     icon: path.join(__dirname, '../public/images/agent-workbench-logo.png'),
     webPreferences: {
       // Security: Enable context isolation
@@ -77,6 +85,8 @@ function createWindow() {
   // Show window when ready to prevent visual flash
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
+    // Set title again to ensure it's not overridden
+    mainWindow.setTitle(isDev ? '[DEV] Agent Workbench' : 'Agent Workbench');
   });
 
   // Emitted when the window is closed

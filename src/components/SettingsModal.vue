@@ -64,6 +64,10 @@ const colorLabels = {
   btnPrimaryHover: 'Primary Button Hover',
   btnSecondary: 'Secondary Button Background',
   btnSecondaryHover: 'Secondary Button Hover',
+  codeInlineBg: 'Inline Code Background (`code`)',
+  codeInlineText: 'Inline Code Text Color (`code`)',
+  codeBlockBg: 'Code Block Background (```)',
+  codeBlockText: 'Code Block Text Color (```)',
 };
 
 const themeName = ref(getCurrentThemeName()); // Initialize with current theme name
@@ -571,16 +575,20 @@ const handleCloneTheme = () => {
                           @click="setColorSchemeLight(slotKey)"
                         >
                           {{ customThemeNames[slotKey] }}
-                          <button
-                            class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded transition-all"
+                          <span
+                            class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded transition-all cursor-pointer"
+                            role="button"
+                            tabindex="0"
                             title="Delete theme"
                             @click.stop="handleClearSlot(slotKey)"
+                            @keydown.enter.stop="handleClearSlot(slotKey)"
+                            @keydown.space.prevent.stop="handleClearSlot(slotKey)"
                           >
                             <font-awesome-icon
                               icon="trash"
                               class="text-red-600 dark:text-red-400 text-xs"
                             />
-                          </button>
+                          </span>
                         </button>
                       </div>
 
@@ -624,16 +632,20 @@ const handleCloneTheme = () => {
                           @click="setColorSchemeDark(slotKey)"
                         >
                           {{ customThemeNames[slotKey] }}
-                          <button
-                            class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded transition-all"
+                          <span
+                            class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded transition-all cursor-pointer"
+                            role="button"
+                            tabindex="0"
                             title="Delete theme"
                             @click.stop="handleClearSlot(slotKey)"
+                            @keydown.enter.stop="handleClearSlot(slotKey)"
+                            @keydown.space.prevent.stop="handleClearSlot(slotKey)"
                           >
                             <font-awesome-icon
                               icon="trash"
                               class="text-red-600 dark:text-red-400 text-xs"
                             />
-                          </button>
+                          </span>
                         </button>
                       </div>
 

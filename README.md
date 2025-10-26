@@ -1,4 +1,4 @@
-![Application Logo](/public/images/agent-workbench-logo.png)
+![Application Logo](readme-agent-workbench-logo.png)
 
 # Agent Workbench
 
@@ -15,6 +15,7 @@ Agent Workbench is an Electron-based desktop application that provides a compreh
 **Important Disclaimer:** The main contributor (David Ranich) develops and tests this application exclusively on macOS. As a result, all testing and validation has been performed on macOS only.
 
 **Current Release Policy:**
+
 - ✅ **macOS**: Fully tested and supported
 - ✅ **Linux**: Expected to work, but not actively tested
 - ⚠️ **Windows**: Not tested - in good conscience, official releases will be for macOS/Linux only

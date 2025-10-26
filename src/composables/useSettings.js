@@ -117,6 +117,10 @@ export const COLOR_PALETTES = {
       btnPrimaryHover: '#1d4ed8',
       btnSecondary: '#7c3aed',
       btnSecondaryHover: '#6d28d9',
+      codeInlineBg: '#e5e7eb',
+      codeInlineText: '#111827',
+      codeBlockBg: '#f6f8fa',
+      codeBlockText: '#24292f',
     },
     [COLOR_SCHEMES.AYU]: {
       bg: '#e8f0f7',
@@ -129,6 +133,10 @@ export const COLOR_PALETTES = {
       btnPrimaryHover: '#3A7BC8',
       btnSecondary: '#8B5CF6',
       btnSecondaryHover: '#7C3AED',
+      codeInlineBg: '#b8c5d0',
+      codeInlineText: '#1a2633',
+      codeBlockBg: '#dce6ed',
+      codeBlockText: '#1a2633',
     },
     [COLOR_SCHEMES.BEARDED]: {
       bg: '#f5f3f0',
@@ -141,6 +149,10 @@ export const COLOR_PALETTES = {
       btnPrimaryHover: '#B08209',
       btnSecondary: '#E6A839',
       btnSecondaryHover: '#D09828',
+      codeInlineBg: '#d4cfc8',
+      codeInlineText: '#2d2a27',
+      codeBlockBg: '#ebe8e3',
+      codeBlockText: '#2d2a27',
     },
     [COLOR_SCHEMES.CYBERPUNK]: {
       bg: '#f0f0f5',
@@ -153,6 +165,10 @@ export const COLOR_PALETTES = {
       btnPrimaryHover: '#E60048',
       btnSecondary: '#00FFC8',
       btnSecondaryHover: '#00E6B3',
+      codeInlineBg: '#c5c5d0',
+      codeInlineText: '#1a1a20',
+      codeBlockBg: '#e5e5eb',
+      codeBlockText: '#1a1a20',
     },
     [COLOR_SCHEMES.EVA]: {
       bg: '#F5F6F8',
@@ -165,6 +181,10 @@ export const COLOR_PALETTES = {
       btnPrimaryHover: '#4A7DD9',
       btnSecondary: '#7C8AE0',
       btnSecondaryHover: '#6979CC',
+      codeInlineBg: '#D4D7DC',
+      codeInlineText: '#1A1D22',
+      codeBlockBg: '#ECEEF1',
+      codeBlockText: '#1A1D22',
     },
     [COLOR_SCHEMES.GRUVBOX]: {
       bg: '#FBF1C7',
@@ -177,6 +197,10 @@ export const COLOR_PALETTES = {
       btnPrimaryHover: '#076678',
       btnSecondary: '#689D6A',
       btnSecondaryHover: '#79740E',
+      codeInlineBg: '#D5C4A1',
+      codeInlineText: '#3C3836',
+      codeBlockBg: '#EADBB2',
+      codeBlockText: '#3C3836',
     },
   },
   // Dark mode colors
@@ -192,6 +216,10 @@ export const COLOR_PALETTES = {
       btnPrimaryHover: '#1d4ed8',
       btnSecondary: '#7c3aed',
       btnSecondaryHover: '#6d28d9',
+      codeInlineBg: '#374151',
+      codeInlineText: '#f9fafb',
+      codeBlockBg: '#1f2937',
+      codeBlockText: '#e5e7eb',
     },
     [COLOR_SCHEMES.AYU]: {
       bg: '#0A0E14',
@@ -204,6 +232,10 @@ export const COLOR_PALETTES = {
       btnPrimaryHover: '#5BA3F5',
       btnSecondary: '#8B5CF6',
       btnSecondaryHover: '#9D6FF7',
+      codeInlineBg: '#30363D',
+      codeInlineText: '#E6E8EB',
+      codeBlockBg: '#0B0F16',
+      codeBlockText: '#E6E8EB',
     },
     [COLOR_SCHEMES.BEARDED]: {
       bg: '#221F1D',
@@ -216,6 +248,10 @@ export const COLOR_PALETTES = {
       btnPrimaryHover: '#DBA515',
       btnSecondary: '#E6A839',
       btnSecondaryHover: '#F0B84A',
+      codeInlineBg: '#3A3532',
+      codeInlineText: '#DEDBD8',
+      codeBlockBg: '#1C1918',
+      codeBlockText: '#DEDBD8',
     },
     [COLOR_SCHEMES.CYBERPUNK]: {
       bg: '#101116',
@@ -228,6 +264,10 @@ export const COLOR_PALETTES = {
       btnPrimaryHover: '#FF1A6B',
       btnSecondary: '#00FFC8',
       btnSecondaryHover: '#1AFFDA',
+      codeInlineBg: '#2A2B35',
+      codeInlineText: '#FFFFFF',
+      codeBlockBg: '#0C0D12',
+      codeBlockText: '#FFFFFF',
     },
     [COLOR_SCHEMES.EVA]: {
       bg: '#272C33',
@@ -240,6 +280,10 @@ export const COLOR_PALETTES = {
       btnPrimaryHover: '#6FA3F7',
       btnSecondary: '#7C8AE0',
       btnSecondaryHover: '#8F9BED',
+      codeInlineBg: '#3B424D',
+      codeInlineText: '#FFFFFF',
+      codeBlockBg: '#21252B',
+      codeBlockText: '#FFFFFF',
     },
     [COLOR_SCHEMES.GRUVBOX]: {
       bg: '#1D2021',
@@ -252,6 +296,10 @@ export const COLOR_PALETTES = {
       btnPrimaryHover: '#93B5A8',
       btnSecondary: '#689D6A',
       btnSecondaryHover: '#78AD7A',
+      codeInlineBg: '#3C3836',
+      codeInlineText: '#FBF1C7',
+      codeBlockBg: '#282828',
+      codeBlockText: '#FBF1C7',
     },
   },
 };
@@ -268,6 +316,10 @@ const defaultCustomColorsLight = {
   btnPrimaryHover: '#1d4ed8',
   btnSecondary: '#7c3aed',
   btnSecondaryHover: '#6d28d9',
+  codeInlineBg: '#e5e7eb',
+  codeInlineText: '#111827',
+  codeBlockBg: '#f6f8fa',
+  codeBlockText: '#24292f',
 };
 
 const defaultCustomColorsDark = {
@@ -281,6 +333,10 @@ const defaultCustomColorsDark = {
   btnPrimaryHover: '#1d4ed8',
   btnSecondary: '#7c3aed',
   btnSecondaryHover: '#6d28d9',
+  codeInlineBg: '#374151',
+  codeInlineText: '#f9fafb',
+  codeBlockBg: '#1f2937',
+  codeBlockText: '#e5e7eb',
 };
 
 // Initialize settings from localStorage
@@ -513,6 +569,10 @@ function applyColorScheme() {
   root.style.setProperty('--color-btn-primary-hover', palette.btnPrimaryHover);
   root.style.setProperty('--color-btn-secondary', palette.btnSecondary);
   root.style.setProperty('--color-btn-secondary-hover', palette.btnSecondaryHover);
+  root.style.setProperty('--color-code-inline-bg', palette.codeInlineBg);
+  root.style.setProperty('--color-code-inline-text', palette.codeInlineText);
+  root.style.setProperty('--color-code-block-bg', palette.codeBlockBg);
+  root.style.setProperty('--color-code-block-text', palette.codeBlockText);
 
   // Create a semi-transparent version of btnSecondary for focus ring
   const secondaryRgb = hexToRgb(palette.btnSecondary);
