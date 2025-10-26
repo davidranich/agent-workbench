@@ -1071,13 +1071,13 @@ const openReplace = () => {
 /* Inline code */
 .prose code {
   background-color: var(--color-code-inline-bg, #f6f8fa);
-  padding: 0.2em 0.5em;
+  padding: 0.2em 0.15em;
   border-radius: 0.25em;
   font-size: 0.875em;
   color: var(--color-code-inline-text, #dc2626);
   border: 1px solid var(--color-border, #d0d7de);
   font-weight: 600;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
 }
 
 .dark .prose code {
