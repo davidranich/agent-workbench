@@ -7,6 +7,7 @@ import DOMPurify from 'dompurify';
 import TurndownService from 'turndown';
 import hljs from 'highlight.js/lib/core';
 import FindReplaceDialog from './FindReplaceDialog.vue';
+import BaseModal from './BaseModal.vue';
 
 // Import common languages
 import javascript from 'highlight.js/lib/languages/javascript';
@@ -70,6 +71,20 @@ const findReplaceMode = ref('find'); // 'find' or 'replace'
 const findReplaceDialogRef = ref(null);
 const currentSearchTerm = ref('');
 const currentSearchCaseSensitive = ref(false);
+
+// Link dialog state
+const showLinkDialog = ref(false);
+const linkText = ref('');
+const linkUrl = ref('');
+const linkTextInputRef = ref(null);
+let savedSelection = null;
+
+// Link hover tooltip state
+const showLinkTooltip = ref(false);
+const linkTooltipPosition = ref({ x: 0, y: 0 });
+let hoveredLink = null;
+let editingExistingLink = false;
+let hideTooltipTimeout = null;
 
 // Handle pane resizing
 const startResize = () => {
@@ -283,6 +298,15 @@ watch(showFindReplace, (newVal) => {
   }
 });
 
+// Auto-focus link text input when dialog opens
+watch(showLinkDialog, (newVal) => {
+  if (newVal) {
+    nextTick(() => {
+      linkTextInputRef.value?.focus();
+    });
+  }
+});
+
 // Handle rich text editing
 const handleRichTextInput = (event) => {
   isEditingRichText = true;
@@ -329,10 +353,164 @@ const formatCode = () => {
 };
 
 const insertLink = () => {
-  const url = prompt('Enter URL:');
-  if (url) {
-    execCommand('createLink', url);
+  editingExistingLink = false;
+
+  // Save the current selection
+  const selection = window.getSelection();
+  if (selection && selection.rangeCount > 0) {
+    savedSelection = selection.getRangeAt(0);
+    // Pre-populate text field with selected text
+    linkText.value = selection.toString();
+  } else {
+    linkText.value = '';
   }
+
+  linkUrl.value = '';
+  showLinkDialog.value = true;
+};
+
+// Handle link hover in rich text editor
+const handleRichEditorMouseMove = (event) => {
+  if (editMode.value !== 'richtext') {return;}
+
+  const target = event.target;
+
+  // Check if hovering over a link
+  if (target.tagName === 'A') {
+    // Clear any pending hide timeout
+    if (hideTooltipTimeout) {
+      clearTimeout(hideTooltipTimeout);
+      hideTooltipTimeout = null;
+    }
+
+    hoveredLink = target;
+    const rect = target.getBoundingClientRect();
+    linkTooltipPosition.value = {
+      x: rect.left + rect.width / 2,
+      y: rect.top - 5,
+    };
+    showLinkTooltip.value = true;
+  } else {
+    // Set a delay before hiding the tooltip
+    if (showLinkTooltip.value && !hideTooltipTimeout) {
+      hideTooltipTimeout = setTimeout(() => {
+        showLinkTooltip.value = false;
+        hoveredLink = null;
+        hideTooltipTimeout = null;
+      }, 300); // 300ms delay
+    }
+  }
+};
+
+// Keep tooltip visible when hovering over it
+const handleTooltipMouseEnter = () => {
+  if (hideTooltipTimeout) {
+    clearTimeout(hideTooltipTimeout);
+    hideTooltipTimeout = null;
+  }
+};
+
+const handleTooltipMouseLeave = () => {
+  hideTooltipTimeout = setTimeout(() => {
+    showLinkTooltip.value = false;
+    hoveredLink = null;
+    hideTooltipTimeout = null;
+  }, 100); // Shorter delay when leaving tooltip
+};
+
+// Edit existing link
+// Normalize URL to ensure it has a protocol
+const normalizeUrl = (url) => {
+  if (!url) {return '';}
+
+  // Trim whitespace
+  url = url.trim();
+
+  // Check if URL already has a protocol
+  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(url)) {
+    return url;
+  }
+
+  // Add https:// if no protocol
+  return 'https://' + url;
+};
+
+const editLink = () => {
+  if (!hoveredLink) {return;}
+
+  editingExistingLink = true;
+  linkText.value = hoveredLink.textContent || '';
+  // Use getAttribute to get the raw href value, not the resolved URL
+  linkUrl.value = hoveredLink.getAttribute('href') || '';
+  showLinkTooltip.value = false;
+  showLinkDialog.value = true;
+};
+
+const handleInsertLink = () => {
+  if (linkUrl.value && linkText.value) {
+    // Normalize the URL to ensure it has a protocol
+    const normalizedUrl = normalizeUrl(linkUrl.value);
+
+    if (editingExistingLink && hoveredLink) {
+      // Update existing link
+      hoveredLink.href = normalizedUrl;
+      hoveredLink.textContent = linkText.value;
+      hoveredLink = null;
+    } else {
+      // Create new link
+      const selection = window.getSelection();
+
+      if (savedSelection) {
+        // Restore the selection
+        selection.removeAllRanges();
+        selection.addRange(savedSelection);
+
+        // Delete the current selection content
+        savedSelection.deleteContents();
+
+        // Create a new link element with the custom text
+        const link = document.createElement('a');
+        link.href = normalizedUrl;
+        link.textContent = linkText.value;
+
+        // Insert the link at the cursor position
+        savedSelection.insertNode(link);
+
+        // Move cursor after the link
+        const range = document.createRange();
+        range.setStartAfter(link);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      } else {
+        // No selection - insert at cursor position
+        const range = selection.getRangeAt(0);
+        const link = document.createElement('a');
+        link.href = normalizedUrl;
+        link.textContent = linkText.value;
+        range.insertNode(link);
+
+        // Move cursor after the link
+        const newRange = document.createRange();
+        newRange.setStartAfter(link);
+        newRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+      }
+    }
+
+    // Trigger input event to update markdown
+    if (richEditorRef.value) {
+      richEditorRef.value.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  }
+
+  showLinkDialog.value = false;
+  linkText.value = '';
+  linkUrl.value = '';
+  savedSelection = null;
+  editingExistingLink = false;
+  richEditorRef.value?.focus();
 };
 
 const insertHorizontalRule = () => {
@@ -877,6 +1055,7 @@ const openReplace = () => {
             @input="handleRichTextInput"
             @keydown="handleKeydown"
             @scroll="handleEditorScroll"
+            @mousemove="handleRichEditorMouseMove"
             v-html="richContent"
           ></div>
 
@@ -967,6 +1146,80 @@ const openReplace = () => {
       @replace="handleReplace"
       @replace-all="handleReplaceAll"
     />
+
+    <!-- Link Dialog -->
+    <BaseModal
+      :show="showLinkDialog"
+      :title="editingExistingLink ? 'Edit Link' : 'Insert Link'"
+      width="w-96"
+      :close-on-backdrop-click="false"
+      @close="showLinkDialog = false"
+    >
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        Text
+      </label>
+      <input
+        ref="linkTextInputRef"
+        v-model="linkText"
+        type="text"
+        placeholder="Link text"
+        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"
+        @keydown.enter.prevent.stop="handleInsertLink"
+        @keydown.esc.stop="showLinkDialog = false"
+      />
+
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"> URL </label>
+      <input
+        v-model="linkUrl"
+        type="url"
+        placeholder="https://example.com"
+        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        @keydown.enter.prevent.stop="handleInsertLink"
+        @keydown.esc.stop="showLinkDialog = false"
+      />
+
+      <template #footer>
+        <button
+          class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors border border-gray-300 dark:border-gray-600"
+          @click="showLinkDialog = false"
+        >
+          Cancel
+        </button>
+        <button
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          @click="handleInsertLink"
+        >
+          {{ editingExistingLink ? 'Update' : 'Insert' }}
+        </button>
+      </template>
+    </BaseModal>
+
+    <!-- Link Hover Tooltip -->
+    <div
+      v-if="showLinkTooltip"
+      class="fixed z-50 transform -translate-x-1/2 -translate-y-full mb-2"
+      :style="{
+        left: linkTooltipPosition.x + 'px',
+        top: linkTooltipPosition.y + 'px',
+      }"
+      @mouseenter="handleTooltipMouseEnter"
+      @mouseleave="handleTooltipMouseLeave"
+    >
+      <div
+        class="bg-gray-800 dark:bg-gray-700 text-white px-3 py-1.5 rounded shadow-lg flex items-center gap-2"
+      >
+        <button
+          class="text-xs hover:text-blue-400 transition-colors flex items-center gap-1"
+          @click="editLink"
+        >
+          <font-awesome-icon icon="pen" class="text-xs" />
+          Edit Link
+        </button>
+      </div>
+      <div
+        class="absolute left-1/2 transform -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800 dark:border-t-gray-700"
+      ></div>
+    </div>
   </div>
 </template>
 

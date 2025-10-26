@@ -115,7 +115,7 @@ const handleKeydown = (event) => {
             class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3"
           >
             <button
-              class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors border border-gray-300 dark:border-gray-600"
               @click="handleClose"
             >
               Cancel
