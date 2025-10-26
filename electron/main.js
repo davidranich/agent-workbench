@@ -24,13 +24,6 @@ let directoryWatcher = null;
 
 const isDev = !app.isPackaged;
 
-// Debug: Log dev mode status
-console.log('=== Development Mode Check ===');
-console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('app.isPackaged:', app.isPackaged);
-console.log('isDev:', isDev);
-console.log('==============================');
-
 function createWindow() {
   // Create the browser window with security best practices
   mainWindow = new BrowserWindow({
